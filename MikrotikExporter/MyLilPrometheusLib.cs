@@ -1,4 +1,4 @@
-namespace MikrotikExporter.PrometheusMappers;
+namespace MikrotikExporter;
 
 public enum MetricType
 {
@@ -14,7 +14,7 @@ file static class LabelStringExtensions
         value.Replace("\\", "\\\\").Replace("\n", "\\n").Replace("\"", "\\\"");
 }
 
-public abstract class MetricInfo<T>
+public abstract class MetricInfo
 {
     protected MetricInfo(MetricType type, string name, string help)
     {
@@ -25,9 +25,6 @@ public abstract class MetricInfo<T>
         // This string will never change during lifetime of this instance, so let's cache it
         _stringified = $"# HELP {Name} {Help}\n# TYPE {Name} {Type.ToString().ToLowerInvariant()}\n";
     }
-
-    public abstract MetricValueSet<T> CreateValueSet();
-    public abstract MetricValueSet<T> CreateValueSet(Dictionary<string, string> staticLabels);
     
     public MetricType Type { get; }
     public string Name { get; }
@@ -41,13 +38,30 @@ public abstract class MetricInfo<T>
     }
 }
 
-public abstract class MetricValueSet<T>
+public abstract class MetricInfo<T> : MetricInfo
 {
+    protected MetricInfo(MetricType type, string name, string help) : base(type, name, help) { }
+    
+    public abstract MetricValueSet<T> CreateValueSet();
+    public abstract MetricValueSet<T> CreateValueSet(Dictionary<string, string> staticLabels);
+}
+
+public abstract class MetricValueSet
+{
+    protected MetricValueSet() {}
+    protected MetricValueSet(Dictionary<string, string> staticLabels)
+    {
+        _staticLabels = staticLabels;
+    }
+    
     public IReadOnlyDictionary<string, string> StaticLabels => _staticLabels;
-    
-    public MetricInfo<T> Info { get; }
-    
     private readonly Dictionary<string, string> _staticLabels = new();
+    public abstract MetricInfo Info { get; }
+}
+
+public abstract class MetricValueSet<T> : MetricValueSet
+{
+    public override MetricInfo<T> Info { get; }
     
     public abstract void AddValue(T value);
     public abstract void AddValue(T value, Dictionary<string, string> labels);
@@ -58,9 +72,9 @@ public abstract class MetricValueSet<T>
     }
 
     protected MetricValueSet(MetricInfo<T> info, Dictionary<string, string> staticLabels)
+    : base(staticLabels)
     {
         Info = info;
-        _staticLabels = staticLabels;
     }
 
     public override string ToString()
@@ -214,7 +228,14 @@ public class CounterValueSet<T> : SimpleValueSet<T>
     }
 }
 
-public class MetricsCollection<T>
+public abstract class MetricsCollection
+{
+    public abstract override string ToString();
+    
+    public static MetricsCollection Empty => new MetricsCollection<bool>();
+}
+
+public class MetricsCollection<T> : MetricsCollection
 {
     private readonly List<MetricValueSet<T>> _metrics = [];
 

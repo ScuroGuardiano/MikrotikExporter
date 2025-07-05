@@ -48,6 +48,9 @@ public class InterfaceSummary
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+    
+    [JsonPropertyName("default-name")]
+    public string DefaultName { get; set; } = string.Empty;
 
     [JsonPropertyName("running")]
     public string Running { get; set; } = string.Empty;

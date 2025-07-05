@@ -11,6 +11,11 @@ public class MikrotikRestApiClient : IMikrotikApiClient
     private readonly MikrotikApiClientOptions _options;
 
     public string Host => _httpClient.BaseAddress?.Host ?? "";
+    public Task<EtherInterfaceMonitor[]> GetEtherMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => _options.Name ?? Host;
 
     public MikrotikRestApiClient(HttpClient httpClient, IOptions<MikrotikApiClientOptions> options)

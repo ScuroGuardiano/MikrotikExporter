@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using MikrotikApiClient;
+using MikrotikExporter.Collectors;
 using MikrotikExporter.PrometheusMappers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -14,16 +15,18 @@ builder.Services.AddOptions<MikrotikApiClientOptions>()
 
 // builder.Services.AddHttpClient<IMikrotikApiClient, MikrotikRestApiClient>();
 builder.Services.AddScoped<IMikrotikApiClient, MikrotikApiClient.Tcp.MikrotikApiClient>();
+builder.Services.AddScoped<MasterCollector>();
 
 var app = builder.Build();
 
 app.MapGet("/interface", async (IMikrotikApiClient client) => await client.GetInterfaces());
 
-app.MapGet("/metrics", async (IMikrotikApiClient client) =>
-{
-    var interfaces =  await client.GetInterfaces();
-    return InterfaceSummaryMapper.Map(interfaces, client.Name, client.Host);
-    
-});
+const string collectTimeMetricHeader = """
+                                 # HELP mikrotik_exporter_collect_time Time it took to collect this metrics
+                                 # TYPE mikrotik_exporter_collect_time gauge
+                                 
+                                 """;
+
+app.MapGet("/metrics", async (MasterCollector collector) => await collector.CollectAndStringify());
 
 app.Run();

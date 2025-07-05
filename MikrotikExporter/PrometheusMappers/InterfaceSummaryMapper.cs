@@ -4,7 +4,7 @@ namespace MikrotikExporter.PrometheusMappers;
 
 public static class InterfaceSummaryMapper
 {
-    public static string Map(InterfaceSummary[] interfaces, string routerName, string routerHost)
+    public static MetricsCollection Map(InterfaceSummary[] interfaces, string routerName, string routerHost)
     {
         var collection = new MetricsCollection<InterfaceSummary>();
 
@@ -31,8 +31,8 @@ public static class InterfaceSummaryMapper
             
             collection.AddValue(inter, labels);
         }
-    
-        return collection.ToString();
+
+        return collection;
     }
 
     private static readonly Counter<InterfaceSummary> RxBytes = new (

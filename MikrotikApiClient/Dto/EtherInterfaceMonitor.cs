@@ -1,6 +1,6 @@
 namespace MikrotikApiClient.Dto;
 
-public class EtherInternetMonitor
+public class EtherInterfaceMonitor
 {
     public string Name { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;

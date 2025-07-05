@@ -21,19 +21,30 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
     
     public async Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default)
     {
-        var x = Stopwatch.GetTimestamp();
         await _connection.EnsureRunning(cancellationToken);
-        Console.WriteLine(Stopwatch.GetElapsedTime(x, Stopwatch.GetTimestamp()).Milliseconds);
-        
-        x = Stopwatch.GetTimestamp();
         
         var res = await _connection.Request(["/interface/print"], cancellationToken);
         res.EnsureSuccess();
-        Console.WriteLine(Stopwatch.GetElapsedTime(x, Stopwatch.GetTimestamp()).Milliseconds);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToInterfaceSummary())
+            .ToArray();
+    }
+
+    public async Task<EtherInterfaceMonitor[]> GetEtherMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var res = await _connection.Request([
+            "/interface/ethernet/monitor",
+            "=once=",
+            $"=numbers={string.Join(',', numbers)}"
+        ], cancellationToken);
+
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToEtherInterfaceMonitor())
             .ToArray();
     }
 

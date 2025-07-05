@@ -10,6 +10,7 @@ public static class InterfaceSummaryParser
         {
             Id = s.Attributes[".id"],
             Name = s.Attributes["name"],
+            DefaultName = s.Attributes.GetValueOrDefault("default-name", ""),
             ActualMtu = s.Attributes.GetValueOrDefault("actual-mtu", ""),
             Comment = s.Attributes.GetValueOrDefault("comment", ""),
             Disabled = s.Attributes.GetValueOrDefault("disabled", ""),

@@ -4,11 +4,11 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
-public class EtherInterfaceMonitorCollector : BaseCollector
+public class EthernetMonitorCollector : BaseCollector
 {
     private readonly IMikrotikApiClient _client;
 
-    public EtherInterfaceMonitorCollector(IMikrotikApiClient client)
+    public EthernetMonitorCollector(IMikrotikApiClient client)
     {
         _client = client;
     }
@@ -20,6 +20,9 @@ public class EtherInterfaceMonitorCollector : BaseCollector
             return MetricsCollection.Empty;
         }
         
+        // I am only fetching metrics for SFP
+        // because ether interfaces does not have anything interesting in them
+        // at least for me. Change my mind and I will enable them ^^
         var etherMonitors = await _client.GetEtherMonitor(
             interfaces.Where(i => i.Running == "true")
                 .Where(i => i.Type == "ether")
@@ -27,6 +30,6 @@ public class EtherInterfaceMonitorCollector : BaseCollector
                 .Select(i => i.Id)
         );
 
-        return EtherInterfaceMonitorMapper.Map(etherMonitors, _client.Name, _client.Host);
+        return EthernetMonitorMapper.Map(etherMonitors, _client.Name, _client.Host);
     }
 }

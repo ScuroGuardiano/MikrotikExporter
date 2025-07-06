@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MikrotikApiClient.Tcp;
 
-public sealed class MikrotikApiConnection : IDisposable
+internal sealed class MikrotikApiConnection : IDisposable
 {
     private readonly string _host;
     private readonly string _username;

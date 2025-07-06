@@ -2,7 +2,7 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikApiClient.Tcp.Parsers;
 
-public static class InterfaceSummaryParser
+internal static class InterfaceSummaryParser
 {
     public static InterfaceSummary ToInterfaceSummary(this MikrotikSentence s)
     {

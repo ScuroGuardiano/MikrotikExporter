@@ -5,13 +5,13 @@ namespace MikrotikExporter.Collectors;
 public class MasterCollector
 {
     private readonly InterfaceSummaryCollector _summaryCollector;
-    private readonly EtherInterfaceMonitorCollector _etherMonitorCollector;
+    private readonly EthernetMonitorCollector _etherMonitorCollector;
     private readonly CollectTimeCollector _collectTimeCollector;
 
     public MasterCollector(IMikrotikApiClient client)
     {
         _summaryCollector = new InterfaceSummaryCollector(client);
-        _etherMonitorCollector = new EtherInterfaceMonitorCollector(client);
+        _etherMonitorCollector = new EthernetMonitorCollector(client);
         _collectTimeCollector = new CollectTimeCollector(client);
     }
 

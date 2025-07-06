@@ -32,7 +32,7 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
             .ToArray();
     }
 
-    public async Task<EtherInterfaceMonitor[]> GetEtherMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
+    public async Task<EthernetMonitor[]> GetEtherMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
         
@@ -46,6 +46,25 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToEtherInterfaceMonitor())
             .ToArray();
+    }
+
+    public async Task<WlanMonitor[]> GetWlanMonitor(IEnumerable<string> numbers,
+        CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var res = await _connection.Request([
+        "/interface/wireless/monitor",
+        "=once=",
+        $"=numbers={string.Join(',', numbers)}"
+        ], cancellationToken);
+        
+        var parsed = res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToWlanInterfaceMonitor())
+            .ToArray();
+
+        return parsed;
     }
 
     public void Dispose()

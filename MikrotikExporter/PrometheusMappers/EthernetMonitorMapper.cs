@@ -2,12 +2,12 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikExporter.PrometheusMappers;
 
-public class EtherInterfaceMonitorMapper
+public static class EthernetMonitorMapper
 {
-    public static MetricsCollection Map(EtherInterfaceMonitor[] monitors, string routerName, string routerHost)
+    public static MetricsCollection Map(EthernetMonitor[] monitors, string routerName, string routerHost)
     {
         
-        var collection = new MetricsCollection<EtherInterfaceMonitor>();
+        var collection = new MetricsCollection<EthernetMonitor>();
         var routerLabels = new Dictionary<string, string>
         {
             ["router"] = routerName, ["router_host"] = routerHost, ["type"] = "ether"
@@ -33,38 +33,38 @@ public class EtherInterfaceMonitorMapper
         return collection;
     }
 
-    private static Gauge<EtherInterfaceMonitor> SfpWavelength = new(
-        "sfp-wavelength",
+    private static readonly Gauge<EthernetMonitor> SfpWavelength = new(
+        "mikrotik_sfp_wavelength",
         "Wavelength of laser",
         i => i.SfpWavelength
     );
 
-    private static Gauge<EtherInterfaceMonitor> SfpTemperature = new(
-        "sfp-temperature",
+    private static readonly Gauge<EthernetMonitor> SfpTemperature = new(
+        "mikrotik_sfp_temperature",
         "Temperature of SFP stick",
         i => i.SfpTemperature
     );
 
-    private static Gauge<EtherInterfaceMonitor> SfpSupplyVoltage = new(
-        "sfp-supply-voltage",
+    private static readonly Gauge<EthernetMonitor> SfpSupplyVoltage = new(
+        "mikrotik_sfp_supply_voltage",
         "Supply voltage of SFP",
         i => i.SfpSupplyVoltage
     );
 
-    private static Gauge<EtherInterfaceMonitor> SfpTxBiasCurrent = new(
-        "sfp-tx-bias-current",
+    private static readonly Gauge<EthernetMonitor> SfpTxBiasCurrent = new(
+        "mikrotik_sfp_tx_bias_current",
         "SFP Bias current",
         i => i.SfpTxBiasCurrent
     );
 
-    private static Gauge<EtherInterfaceMonitor> SfpTxPower = new (
-        "sfp-tx-power",
+    private static readonly Gauge<EthernetMonitor> SfpTxPower = new (
+        "mikrotik_sfp_tx_power",
         "SFP TX Power",
         i => i.SfpTxPower
     );
 
-    private static Gauge<EtherInterfaceMonitor> SfpRxPower = new(
-        "sfp-rx-power",
+    private static readonly Gauge<EthernetMonitor> SfpRxPower = new(
+        "mikrotik_sfp_rx_power",
         "SFP RX Power",
         i => i.SfpRxPower
     );

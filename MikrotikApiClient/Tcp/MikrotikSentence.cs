@@ -1,6 +1,6 @@
 namespace MikrotikApiClient.Tcp;
 
-public class MikrotikSentence
+internal class MikrotikSentence
 {
     public required string Reply { get; init; }
     public string? Tag  { get; init; }

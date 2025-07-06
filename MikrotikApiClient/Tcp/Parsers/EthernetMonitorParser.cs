@@ -2,11 +2,11 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikApiClient.Tcp.Parsers;
 
-public static class EtherInterfaceMonitorParser
+internal static class EthernetMonitorParser
 {
-    public static EtherInterfaceMonitor ToEtherInterfaceMonitor(this MikrotikSentence s)
+    public static EthernetMonitor ToEtherInterfaceMonitor(this MikrotikSentence s)
     {
-        return new EtherInterfaceMonitor
+        return new EthernetMonitor
         {
             Name = s.Attributes.GetValueOrDefault("name", string.Empty),
             Status = s.Attributes.GetValueOrDefault("status", string.Empty),

@@ -15,6 +15,14 @@ public interface IMikrotikApiClient
     public Task<PppoeClientMonitor[]> GetPppoeClientMonitor(IEnumerable<string> numbers,
         CancellationToken cancellationToken = default);
     
+    public Task<HealthStat[]> GetHealthStats(CancellationToken cancellationToken = default);
+    
+    public Task<SystemResource> GetSystemResource(CancellationToken cancellationToken = default);
+    
+    public Task<DhcpServerLease[]> GetDhcpServerLeases(CancellationToken cancellationToken = default);
+    
+    public Task<IpFirewallConnection[]> GetIpFirewallConnections(CancellationToken cancellationToken = default);
+    
     public string Name { get; }
     public string Host { get; }
 }

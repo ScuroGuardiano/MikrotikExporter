@@ -26,6 +26,26 @@ public class MikrotikRestApiClient : IMikrotikApiClient
         throw new NotImplementedException();
     }
 
+    public Task<HealthStat[]> GetHealthStats(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<SystemResource> GetSystemResource(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<DhcpServerLease[]> GetDhcpServerLeases(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IpFirewallConnection[]> GetIpFirewallConnections(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => _options.Name ?? Host;
 
     public MikrotikRestApiClient(HttpClient httpClient, IOptions<MikrotikApiClientOptions> options)

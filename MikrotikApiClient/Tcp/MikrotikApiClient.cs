@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using MikrotikApiClient.Dto;
 using MikrotikApiClient.Tcp.Parsers;
@@ -82,6 +81,53 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
             .ToArray();
     }
 
+    public async Task<HealthStat[]> GetHealthStats(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var res = await _connection.Request(["/system/health/print"], cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToHealthStat())
+            .ToArray();
+    }
+
+    public async Task<SystemResource> GetSystemResource(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var res = await _connection.Request(["/system/resource/print"], cancellationToken);
+
+        // TODO: Make it cleaner after adding error handling XD
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToSystemResource())
+            .First();
+    }
+
+    public async Task<DhcpServerLease[]> GetDhcpServerLeases(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/ip/dhcp-server/lease/print"], cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToDhcpServerLease())
+            .ToArray();
+    }
+
+    public async Task<IpFirewallConnection[]> GetIpFirewallConnections(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/ip/firewall/connection/print"], cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpFirewallConnection())
+            .ToArray();
+    }
+    
     public void Dispose()
     {
         _connection.Dispose();

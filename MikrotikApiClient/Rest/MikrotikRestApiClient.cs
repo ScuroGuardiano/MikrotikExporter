@@ -16,6 +16,16 @@ public class MikrotikRestApiClient : IMikrotikApiClient
         throw new NotImplementedException();
     }
 
+    public Task<WlanMonitor[]> GetWlanMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PppoeClientMonitor[]> GetPppoeClientMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => _options.Name ?? Host;
 
     public MikrotikRestApiClient(HttpClient httpClient, IOptions<MikrotikApiClientOptions> options)

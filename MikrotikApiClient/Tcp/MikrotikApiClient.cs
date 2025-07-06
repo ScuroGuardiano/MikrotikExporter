@@ -54,17 +54,32 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
         await _connection.EnsureRunning(cancellationToken);
         
         var res = await _connection.Request([
-        "/interface/wireless/monitor",
-        "=once=",
-        $"=numbers={string.Join(',', numbers)}"
+            "/interface/wireless/monitor",
+            "=once=",
+            $"=numbers={string.Join(',', numbers)}"
         ], cancellationToken);
         
-        var parsed = res.Sentences
+        return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToWlanInterfaceMonitor())
             .ToArray();
+    }
 
-        return parsed;
+    public async Task<PppoeClientMonitor[]> GetPppoeClientMonitor(IEnumerable<string> numbers,
+        CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var res = await _connection.Request([
+            "/interface/pppoe-client/monitor",
+            "=once=",
+            $"=numbers={string.Join(',', numbers)}"
+        ],  cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToPppoeClientMonitor())
+            .ToArray();
     }
 
     public void Dispose()

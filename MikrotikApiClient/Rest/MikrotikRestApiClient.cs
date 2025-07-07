@@ -46,6 +46,21 @@ public class MikrotikRestApiClient : IMikrotikApiClient
         throw new NotImplementedException();
     }
 
+    public Task<IpFirewallRule[]> GetIpFirewallRules(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IpPool[]> GetIpPools(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string> GetIdentity(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => _options.Name ?? Host;
 
     public MikrotikRestApiClient(HttpClient httpClient, IOptions<MikrotikApiClientOptions> options)

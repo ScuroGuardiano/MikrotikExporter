@@ -127,7 +127,58 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
             .Select(s => s.ToIpFirewallConnection())
             .ToArray();
     }
-    
+
+    public async Task<IpFirewallRule[]> GetIpFirewallRules(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        
+        var raw = await _connection.Request(["/ip/firewall/raw/print"], cancellationToken);
+        var filter = await _connection.Request(["/ip/firewall/filter/print"], cancellationToken);
+        var mangle = await _connection.Request(["/ip/firewall/mangle/print"], cancellationToken);
+        var nat = await _connection.Request(["/ip/firewall/nat/print"], cancellationToken);
+
+        var rawParsed = raw.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpFirewallRule("raw"));
+        var filterParsed = filter.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpFirewallRule("filter"));
+        var mangleParsed = mangle.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpFirewallRule("mangle"));
+        var natParsed = nat.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpFirewallRule("nat"));
+        
+        return rawParsed
+            .Concat(filterParsed)
+            .Concat(mangleParsed)
+            .Concat(natParsed)
+            .ToArray();
+    }
+
+    public async Task<IpPool[]> GetIpPools(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/ip/pool/print"], cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToIpPool())
+            .ToArray();
+    }
+
+    public async Task<string> GetIdentity(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/system/identity/print"], cancellationToken);
+
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.Attributes["name"])
+            .FirstOrDefault(string.Empty);
+    }
+
     public void Dispose()
     {
         _connection.Dispose();

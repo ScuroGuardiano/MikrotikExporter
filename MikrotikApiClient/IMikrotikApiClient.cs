@@ -23,6 +23,12 @@ public interface IMikrotikApiClient
     
     public Task<IpFirewallConnection[]> GetIpFirewallConnections(CancellationToken cancellationToken = default);
     
+    public Task<IpFirewallRule[]> GetIpFirewallRules(CancellationToken cancellationToken = default);
+    
+    public Task<IpPool[]> GetIpPools(CancellationToken cancellationToken = default);
+    
+    public Task<string> GetIdentity(CancellationToken cancellationToken = default);
+    
     public string Name { get; }
     public string Host { get; }
 }

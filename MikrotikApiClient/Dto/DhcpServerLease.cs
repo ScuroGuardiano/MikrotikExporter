@@ -4,6 +4,7 @@ public class DhcpServerLease
 {
     public required string Id { get; set; }
     public string Address { get; set; } = string.Empty;
+    public string Comment { get; set; } = string.Empty;
     public string MacAddress { get; set; } = string.Empty;
     public string ClientId { get; set; } = string.Empty;
     public string AddressLists { get; set; } = string.Empty;

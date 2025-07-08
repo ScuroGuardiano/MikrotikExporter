@@ -10,6 +10,7 @@ internal static class DhcpServerLeaseParser
         {
             Id = s.Attributes[".id"],
             Address = s.Attributes.GetValueOrDefault("address", string.Empty),
+            Comment = s.Attributes.GetValueOrDefault("comment", string.Empty),
             MacAddress = s.Attributes.GetValueOrDefault("mac-address", string.Empty),
             ClientId = s.Attributes.GetValueOrDefault("client-id", string.Empty),
             AddressLists = s.Attributes.GetValueOrDefault("address-lists", string.Empty),

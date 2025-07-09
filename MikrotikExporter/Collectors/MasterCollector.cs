@@ -12,6 +12,9 @@ public class MasterCollector
     private readonly RouterInfoCollector _routerInfoCollector;
     private readonly DhcpServerLeaseCollector _dhcpServerLeaseCollector;
     private readonly IpPoolCollector _ipPoolCollector;
+    private readonly IpFirewallRuleCollector _ipFirewallRuleCollector;
+    private readonly IpFirewallConnectionCollector _ipFirewallConnectionCollector;
+    private readonly WlanRegistrationCollector _wlanRegistrationCollector;
 
     public MasterCollector(IMikrotikApiClient client)
     {
@@ -23,6 +26,9 @@ public class MasterCollector
         _routerInfoCollector = new RouterInfoCollector(client);
         _dhcpServerLeaseCollector = new DhcpServerLeaseCollector(client);
         _ipPoolCollector = new IpPoolCollector(client);
+        _ipFirewallRuleCollector = new IpFirewallRuleCollector(client);
+        _ipFirewallConnectionCollector = new IpFirewallConnectionCollector(client);
+        _wlanRegistrationCollector = new WlanRegistrationCollector(client);
     }
 
     public async Task<string> CollectAndStringify()
@@ -40,6 +46,9 @@ public class MasterCollector
             ..await _routerInfoCollector.Collect(),
             await _dhcpServerLeaseCollector.Collect(),
             await _ipPoolCollector.Collect(),
+            await _ipFirewallRuleCollector.Collect(),
+            await _ipFirewallConnectionCollector.Collect(),
+            await _wlanRegistrationCollector.Collect(),
 
             _collectTimeCollector.Collect()
         ];

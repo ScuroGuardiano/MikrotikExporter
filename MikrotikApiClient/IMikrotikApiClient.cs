@@ -29,6 +29,10 @@ public interface IMikrotikApiClient
     
     public Task<string> GetIdentity(CancellationToken cancellationToken = default);
     
+    public Task<DnsCacheRecord[]> GetDnsCacheRecords(CancellationToken cancellationToken = default);
+    
+    public Task<WlanRegistration[]> GetWlanRegistrations(CancellationToken cancellationToken = default);
+    
     public string Name { get; }
     public string Host { get; }
 }

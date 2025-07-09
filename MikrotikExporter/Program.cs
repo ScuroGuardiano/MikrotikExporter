@@ -10,6 +10,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, MkJsonSerializerContext.Default);
 });
 
+builder.Services.AddResponseCompression();
+
 builder.Services.AddOptions<MikrotikApiClientOptions>()
     .Bind(builder.Configuration.GetSection("Mikrotik"));
 
@@ -18,6 +20,8 @@ builder.Services.AddScoped<IMikrotikApiClient, MikrotikApiClient.Tcp.MikrotikApi
 builder.Services.AddScoped<MasterCollector>();
 
 var app = builder.Build();
+
+app.UseResponseCompression();
 
 app.MapGet("/interface", async (IMikrotikApiClient client) => await client.GetInterfaces());
 

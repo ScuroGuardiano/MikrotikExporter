@@ -20,14 +20,23 @@ public static class MikrotikTimeSpanConverter
 
         var curr = string.Empty;
 
-        foreach (var c in time)
+        for (var i = 0; i < time.Length; i++)
         {
+            char c = time[i];
+            
             if (char.IsDigit(c))
             {
                 curr += c;
             }
             else
             {
+                if (c == 'm' && (time.Length > i + 1) && time[i + 1] == 's')
+                {
+                    i++;
+                    timeSpan = TimeSpan.FromMilliseconds(int.Parse(curr));
+                    continue;
+                }
+                
                 timeSpan += int.Parse(curr) * ConvertionTable.GetValueOrDefault(c, Def);
                 curr = string.Empty;
             }

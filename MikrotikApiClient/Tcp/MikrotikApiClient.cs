@@ -179,6 +179,28 @@ public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
             .FirstOrDefault(string.Empty);
     }
 
+    public async Task<DnsCacheRecord[]> GetDnsCacheRecords(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/ip/dns/cache/print"], cancellationToken);
+
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToDnsRecord())
+            .ToArray();
+    }
+
+    public async Task<WlanRegistration[]> GetWlanRegistrations(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/interface/wireless/registration-table/print"], cancellationToken);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToWlanRegistration())
+            .ToArray();
+    }
+
     public void Dispose()
     {
         _connection.Dispose();

@@ -61,6 +61,16 @@ public class MikrotikRestApiClient : IMikrotikApiClient
         throw new NotImplementedException();
     }
 
+    public Task<DnsCacheRecord[]> GetDnsCacheRecords(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<WlanRegistration[]> GetWlanRegistrations(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Name => _options.Name ?? Host;
 
     public MikrotikRestApiClient(HttpClient httpClient, IOptions<MikrotikApiClientOptions> options)

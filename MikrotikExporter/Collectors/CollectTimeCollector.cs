@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using System.Globalization;
 using MikrotikApiClient;
+using MikrotikApiClient.Tcp;
 
 namespace MikrotikExporter.Collectors;
 
 public class CollectTimeCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
     private long _startTimestamp;
 
     private static readonly Gauge<TimeSpan> ExportCollectTime = new(
@@ -15,7 +16,7 @@ public class CollectTimeCollector : BaseCollector
         ts => ts.TotalSeconds.ToString(CultureInfo.InvariantCulture)
     );
 
-    public CollectTimeCollector(IMikrotikApiClient client)
+    public CollectTimeCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

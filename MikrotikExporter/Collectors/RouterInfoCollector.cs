@@ -12,9 +12,9 @@ namespace MikrotikExporter.Collectors;
 /// </summary>
 public class RouterInfoCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public RouterInfoCollector(IMikrotikApiClient client)
+    public RouterInfoCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

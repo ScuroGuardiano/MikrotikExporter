@@ -12,9 +12,9 @@ namespace MikrotikExporter.Collectors;
 /// </summary>
 public class WlanMonitorCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public WlanMonitorCollector(IMikrotikApiClient client)
+    public WlanMonitorCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

@@ -27,7 +27,7 @@ public static class MikrotikServiceCollectionExtensions
             // So we add all those services as scoped per-request
             // The only reason I add pool here is because I want to make multiple requests concurrently
             services.AddScoped<IMikrotikApiClientFactory, MikrotikRestApiClientClientFactory>();
-            services.AddScoped<IMikrotikApiClient, MikrotikApiClientPool>();
+            services.AddKeyedScoped<IMikrotikConcurrentApiClient, MikrotikApiClientPool>("OriginalClient");
         }
         else
         {
@@ -36,7 +36,9 @@ public static class MikrotikServiceCollectionExtensions
             // 1. Limit maximum load on router
             // 2. Saves few milliseconds on login request and tcp handshake
             services.AddSingleton<IMikrotikApiClientFactory, MikrotikTcpApiClientClientFactory>();
-            services.AddSingleton<IMikrotikApiClient, MikrotikApiClientPool>();
+            services.AddKeyedSingleton<IMikrotikConcurrentApiClient, MikrotikApiClientPool>("OriginalClient");
         }
+
+        services.AddScoped<IMikrotikConcurrentApiClient, MikrotikConcurrentCachedApiClient>();
     }
 }

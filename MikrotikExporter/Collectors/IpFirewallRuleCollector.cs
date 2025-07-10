@@ -6,9 +6,9 @@ namespace MikrotikExporter.Collectors;
 
 public class IpFirewallRuleCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public IpFirewallRuleCollector(IMikrotikApiClient client)
+    public IpFirewallRuleCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

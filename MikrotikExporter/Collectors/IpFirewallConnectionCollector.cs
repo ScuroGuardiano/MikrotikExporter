@@ -24,9 +24,9 @@ namespace MikrotikExporter.Collectors;
 /// </remarks>
 public class IpFirewallConnectionCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public IpFirewallConnectionCollector(IMikrotikApiClient client)
+    public IpFirewallConnectionCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

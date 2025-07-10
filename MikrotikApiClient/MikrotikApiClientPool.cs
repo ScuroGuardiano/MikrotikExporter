@@ -3,10 +3,11 @@ using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Options;
 using MikrotikApiClient.Dto;
+using MikrotikApiClient.Tcp;
 
 namespace MikrotikApiClient;
 
-internal sealed class MikrotikApiClientPool : IMikrotikApiClient
+internal sealed class MikrotikApiClientPool : IMikrotikConcurrentApiClient
 {
     private readonly SemaphoreSlim _semaphoreSlim;
     private readonly ConcurrentBag<IMikrotikApiClient> _clients;

@@ -18,8 +18,6 @@ var app = builder.Build();
 
 app.UseResponseCompression();
 
-app.MapGet("/interface", async (IMikrotikApiClient client) => await client.GetInterfaces());
-
 app.MapGet("/metrics", async (MasterCollector collector) => await collector.CollectAndStringify());
 
 app.Run();

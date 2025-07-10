@@ -13,9 +13,9 @@ namespace MikrotikExporter.Collectors;
 /// </summary>
 public class PppoeClientMonitorCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public PppoeClientMonitorCollector(IMikrotikApiClient client)
+    public PppoeClientMonitorCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

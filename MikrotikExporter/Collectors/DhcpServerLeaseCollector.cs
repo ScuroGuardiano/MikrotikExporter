@@ -1,6 +1,7 @@
 using System.Globalization;
 using MikrotikApiClient;
 using MikrotikApiClient.Dto;
+using MikrotikApiClient.Tcp;
 using MikrotikExporter.Helpers;
 using MikrotikExporter.PrometheusMappers;
 
@@ -13,9 +14,9 @@ namespace MikrotikExporter.Collectors;
 /// </summary>
 public class DhcpServerLeaseCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public DhcpServerLeaseCollector(IMikrotikApiClient client)
+    public DhcpServerLeaseCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

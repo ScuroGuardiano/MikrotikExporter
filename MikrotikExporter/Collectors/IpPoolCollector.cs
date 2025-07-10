@@ -6,9 +6,9 @@ namespace MikrotikExporter.Collectors;
 
 public class IpPoolCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public IpPoolCollector(IMikrotikApiClient client)
+    public IpPoolCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

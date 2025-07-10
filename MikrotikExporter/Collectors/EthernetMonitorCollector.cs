@@ -1,14 +1,15 @@
 using MikrotikApiClient;
 using MikrotikApiClient.Dto;
+using MikrotikApiClient.Tcp;
 using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
 public class EthernetMonitorCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public EthernetMonitorCollector(IMikrotikApiClient client)
+    public EthernetMonitorCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

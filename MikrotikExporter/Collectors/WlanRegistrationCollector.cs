@@ -8,9 +8,9 @@ namespace MikrotikExporter.Collectors;
 
 public class WlanRegistrationCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public WlanRegistrationCollector(IMikrotikApiClient client)
+    public WlanRegistrationCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

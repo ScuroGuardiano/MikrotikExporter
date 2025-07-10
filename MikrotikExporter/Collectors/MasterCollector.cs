@@ -1,4 +1,5 @@
 using MikrotikApiClient;
+using MikrotikApiClient.Tcp;
 
 namespace MikrotikExporter.Collectors;
 
@@ -16,7 +17,7 @@ public class MasterCollector
     private readonly IpFirewallConnectionCollector _ipFirewallConnectionCollector;
     private readonly WlanRegistrationCollector _wlanRegistrationCollector;
 
-    public MasterCollector(IMikrotikApiClient client)
+    public MasterCollector(IMikrotikConcurrentApiClient client)
     {
         _summaryCollector = new InterfaceSummaryCollector(client);
         _etherMonitorCollector = new EthernetMonitorCollector(client);

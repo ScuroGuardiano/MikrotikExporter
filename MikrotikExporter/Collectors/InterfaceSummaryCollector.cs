@@ -10,9 +10,9 @@ namespace MikrotikExporter.Collectors;
 /// </summary>
 public class InterfaceSummaryCollector : BaseCollector
 {
-    private readonly IMikrotikApiClient _client;
+    private readonly IMikrotikConcurrentApiClient _client;
 
-    public InterfaceSummaryCollector(IMikrotikApiClient client)
+    public InterfaceSummaryCollector(IMikrotikConcurrentApiClient client)
     {
         _client = client;
     }

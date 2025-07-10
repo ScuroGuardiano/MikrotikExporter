@@ -1,5 +1,5 @@
 namespace MikrotikApiClient.Tcp;
-internal class MikrotikResponse
+internal sealed class MikrotikResponse
 {
     public required IReadOnlyList<MikrotikSentence> Sentences { get; init; }
     public bool ContainsErrors { get; init; }

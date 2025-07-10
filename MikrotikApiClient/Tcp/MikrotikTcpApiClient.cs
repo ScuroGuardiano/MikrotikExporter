@@ -4,18 +4,18 @@ using MikrotikApiClient.Tcp.Parsers;
 
 namespace MikrotikApiClient.Tcp;
 
-public sealed class MikrotikApiClient : IMikrotikApiClient, IDisposable
+internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
 {
-    private readonly MikrotikApiConnection _connection;
+    private readonly MikrotikTcpApiConnection _connection;
     private readonly MikrotikApiClientOptions _options;
     
     public string Host => _options.Host;
     public string Name => _options.Name ?? Host;
 
-    public MikrotikApiClient(IOptions<MikrotikApiClientOptions> options)
+    public MikrotikTcpApiClient(IOptions<MikrotikApiClientOptions> options)
     {
         _options = options.Value;
-        _connection = new MikrotikApiConnection(_options.Host, _options.Username, _options.Password);
+        _connection = new MikrotikTcpApiConnection(_options.Host, _options.Username, _options.Password);
     }
     
     public async Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default)

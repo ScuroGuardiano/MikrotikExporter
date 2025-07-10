@@ -27,21 +27,6 @@ public class InterfaceSummaryCollector : BaseCollector
         return Map(await _client.GetInterfaces());
     }
 
-    /// <summary>
-    /// This method returns tuple of metrics and interface summary array.
-    /// </summary>
-    /// <returns></returns>
-    public async Task<(MetricsCollection, InterfaceSummary[])> CollectWithInterfaces()
-    {
-        if (!Enabled)
-        {
-            return (MetricsCollection.Empty, []);
-        }
-        
-        var interfaces = await _client.GetInterfaces();
-        return (Map(interfaces), interfaces);
-    }
-    
     public MetricsCollection Map(InterfaceSummary[] interfaces)
     {
         var collection = new MetricsCollection<InterfaceSummary>();

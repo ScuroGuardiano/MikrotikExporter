@@ -62,7 +62,7 @@ public class RouterInfoCollector : BaseCollector
         systemResourcesCollection.AddValue(resource);
         
         identityCollection.CreateValueSets(staticLabels, RouterInfo);
-        identityCollection.AddValue(identity, routerInfoLabels);
+        identityCollection.AddValue("1.0", routerInfoLabels);
         
         return [systemResourcesCollection, identityCollection];
     }

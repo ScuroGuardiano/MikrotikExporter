@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using MikrotikApiClient;
 using MikrotikExporter.Collectors;
-using MikrotikExporter.PrometheusMappers;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -12,11 +10,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddResponseCompression();
 
-builder.Services.AddOptions<MikrotikApiClientOptions>()
-    .Bind(builder.Configuration.GetSection("Mikrotik"));
+builder.Services.AddMikrotikPooledApiClient(builder.Configuration);
 
-// builder.Services.AddHttpClient<IMikrotikApiClient, MikrotikRestApiClient>();
-builder.Services.AddScoped<IMikrotikApiClient, MikrotikApiClient.Tcp.MikrotikApiClient>();
 builder.Services.AddScoped<MasterCollector>();
 
 var app = builder.Build();

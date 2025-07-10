@@ -5,7 +5,7 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikApiClient.Rest;
 
-public class MikrotikRestApiClient : IMikrotikApiClient
+internal sealed class MikrotikRestApiClient : IMikrotikApiClient
 {
     private readonly HttpClient _httpClient;
     private readonly MikrotikApiClientOptions _options;
@@ -102,5 +102,10 @@ public class MikrotikRestApiClient : IMikrotikApiClient
         }
         
         return res;
+    }
+
+    public void Dispose()
+    {
+        
     }
 }

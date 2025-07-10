@@ -2,7 +2,7 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikApiClient;
 
-public interface IMikrotikApiClient
+public interface IMikrotikApiClient : IDisposable
 {
     public Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default);
 

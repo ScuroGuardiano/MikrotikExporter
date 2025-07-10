@@ -20,13 +20,15 @@ public class PppoeClientMonitorCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(InterfaceSummary[] interfaces)
+    public async Task<MetricsCollection> Collect()
     {
         if (!Enabled)
         {
             return MetricsCollection.Empty;
         }
 
+        var interfaces = await _client.GetInterfaces();
+        
         var ifaces =
             interfaces.Where(i => i.Type == "pppoe-out")
                 .ToArray();

@@ -35,24 +35,29 @@ public class MasterCollector
     {
         _collectTimeCollector.Start();
         
-        var (interfaceCollection, interfaces) = await _summaryCollector.CollectWithInterfaces();
-
-        List<MetricsCollection> collections =
+        var routerInfoTask = _routerInfoCollector.Collect();
+        
+        List<Task<MetricsCollection>> collectionsTasks =
         [
-            interfaceCollection,
-            await _etherMonitorCollector.Collect(interfaces),
-            await _wlanMonitorCollector.Collect(interfaces),
-            await _pppoeClientMonitorCollector.Collect(interfaces),
-            ..await _routerInfoCollector.Collect(),
-            await _dhcpServerLeaseCollector.Collect(),
-            await _ipPoolCollector.Collect(),
-            await _ipFirewallRuleCollector.Collect(),
-            await _ipFirewallConnectionCollector.Collect(),
-            await _wlanRegistrationCollector.Collect(),
+            _summaryCollector.Collect(),
+            _etherMonitorCollector.Collect(),
+            _wlanMonitorCollector.Collect(),
+            _pppoeClientMonitorCollector.Collect(),
+            _dhcpServerLeaseCollector.Collect(),
+            _ipPoolCollector.Collect(),
+            _ipFirewallRuleCollector.Collect(),
+            _ipFirewallConnectionCollector.Collect(),
+            _wlanRegistrationCollector.Collect(),
 
-            _collectTimeCollector.Collect()
         ];
-
+        
+        Task.WaitAll(collectionsTasks);
+        var routerInfo = await routerInfoTask;
+        var collectionTime = _collectTimeCollector.Collect();
+        
+        var collections = collectionsTasks.Select(t => t.Result).ToList();
+        collections.AddRange([..routerInfo, collectionTime]);
+        
         return string.Join('\n', collections.Select(c => c.ToString()));
     }
 }

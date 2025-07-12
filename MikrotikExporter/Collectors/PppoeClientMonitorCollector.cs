@@ -9,7 +9,7 @@ namespace MikrotikExporter.Collectors;
 /// <summary>
 /// PPPoE Client monitor collector
 ///
-/// Frequency of change: low, not worth collecting more frequently than once per 30 seconds
+/// Frequency of change: low, not worth collecting more frequently than once per 30 seconds I guess
 /// </summary>
 public class PppoeClientMonitorCollector
 {

@@ -4,6 +4,9 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
+/// <summary>
+/// Frequency of change: High if you care about RX/TX rates, otherwise low. For me it's low.
+/// </summary>
 public class IpFirewallRuleCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;

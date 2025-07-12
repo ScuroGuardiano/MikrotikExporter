@@ -63,4 +63,40 @@ public class MasterCollector
         
         return string.Join('\n', collections.Select(c => c.ToString()));
     }
+
+    public async Task<string> CollectAndStringify(IReadOnlySet<Type> enableList)
+    {
+        _collectTimeCollector.Start();
+        
+        // Embrace mess, it's my mess.
+        
+        List<Task<MetricsCollection>> collectionsTasks =
+        [
+            _summaryCollector.Collect(enableList.Contains(_summaryCollector.GetType())),
+            _etherMonitorCollector.Collect(enableList.Contains(_etherMonitorCollector.GetType())),
+            _wlanMonitorCollector.Collect(enableList.Contains(_wlanMonitorCollector.GetType())),
+            _pppoeClientMonitorCollector.Collect(enableList.Contains(_pppoeClientMonitorCollector.GetType())),
+            _dhcpServerLeaseCollector.Collect(enableList.Contains(_dhcpServerLeaseCollector.GetType())),
+            _ipPoolCollector.Collect(enableList.Contains(_ipPoolCollector.GetType())),
+            _ipFirewallRuleCollector.Collect(enableList.Contains(_ipFirewallRuleCollector.GetType())),
+            _ipFirewallConnectionCollector.Collect(enableList.Contains(_ipFirewallConnectionCollector.GetType())),
+            _wlanRegistrationCollector.Collect(enableList.Contains(_wlanRegistrationCollector.GetType())),
+            _healthCollector.Collect(enableList.Contains(_healthCollector.GetType())),
+            _routerInfoCollector.Collect(enableList.Contains(_routerInfoCollector.GetType())),
+            _systemResourceCollector.Collect(enableList.Contains(_systemResourceCollector.GetType()))
+        ];
+        
+        await Task.WhenAll(collectionsTasks);
+        var collectionTime = _collectTimeCollector.Collect();
+        
+        var collections = collectionsTasks.Select(t => t.Result).ToList();
+        collections.Add(collectionTime);
+        
+        return string.Join(
+            '\n',
+            collections
+                .Select(c => c.ToString())
+                .Where(s => !string.IsNullOrEmpty(s))
+        );
+    }
 }

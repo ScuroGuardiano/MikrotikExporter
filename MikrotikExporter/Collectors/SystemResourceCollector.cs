@@ -9,6 +9,8 @@ namespace MikrotikExporter.Collectors;
 /// <summary>
 /// This collector collects only those resource that change over time, like currently used RAM or CPU
 /// Other stats, like total RAM, total HDD space etc. you will get with <see cref="RouterInfoCollector"/>
+///
+/// Frequency of change: high
 /// </summary>
 public class SystemResourceCollector
 {

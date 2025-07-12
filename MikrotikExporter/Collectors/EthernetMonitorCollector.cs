@@ -1,10 +1,12 @@
 using MikrotikApiClient;
 using MikrotikApiClient.Dto;
-using MikrotikApiClient.Tcp;
-using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
+
+/// <summary>
+/// Frequency of change: medium
+/// </summary>
 public class EthernetMonitorCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;

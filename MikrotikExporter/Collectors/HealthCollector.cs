@@ -3,6 +3,9 @@ using MikrotikApiClient.Dto;
 
 namespace MikrotikExporter.Collectors;
 
+/// <summary>
+/// Frequency of change: medium? Maybe xD
+/// </summary>
 public class HealthCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;

@@ -4,6 +4,9 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
+/// <summary>
+/// Frequency of change: low, collect every 30 seconds or so
+/// </summary>
 public class IpPoolCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;

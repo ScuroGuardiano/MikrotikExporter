@@ -6,6 +6,10 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
+/// <summary>
+///
+/// Frequency of change: medium I'd say, we have signal changes and transfer but do you care? If you care about accurate rates then it's high
+/// </summary>
 public class WlanRegistrationCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;

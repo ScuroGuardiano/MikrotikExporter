@@ -10,7 +10,7 @@ namespace MikrotikExporter.Collectors;
 /// <summary>
 /// DHCP Server lease collector
 ///
-/// Frequency of change: medium? Like idk, I'd collect it once every 30 seconds tbh
+/// Frequency of change: low? Like idk, I'd collect it once every 30 seconds tbh
 /// </summary>
 public class DhcpServerLeaseCollector
 {

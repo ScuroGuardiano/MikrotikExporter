@@ -3,7 +3,6 @@ using System.Diagnostics;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Options;
 using MikrotikApiClient.Dto;
-using MikrotikApiClient.Tcp;
 
 namespace MikrotikApiClient;
 

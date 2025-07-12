@@ -4,7 +4,7 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
-public class IpPoolCollector : BaseCollector
+public class IpPoolCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -13,9 +13,9 @@ public class IpPoolCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }

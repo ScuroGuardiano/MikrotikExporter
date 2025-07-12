@@ -22,7 +22,7 @@ namespace MikrotikExporter.Collectors;
 /// unlimited 1984 monitoring power! Although with great power comes great responsibility...
 /// 
 /// </remarks>
-public class IpFirewallConnectionCollector : BaseCollector
+public class IpFirewallConnectionCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -31,16 +31,22 @@ public class IpFirewallConnectionCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var ipFirewallConnections = await _client.GetIpFirewallConnections();
-        var dhcpServerLeases = await _client.GetDhcpServerLeases();
-        var dnsCacheRecords = await _client.GetDnsCacheRecords();
+        var ipFirewallConnectionsTask = _client.GetIpFirewallConnections();
+        var dhcpServerLeasesTask = _client.GetDhcpServerLeases();
+        var dnsCacheRecordsTask = _client.GetDnsCacheRecords();
+        
+        await Task.WhenAll(ipFirewallConnectionsTask,  dhcpServerLeasesTask, dnsCacheRecordsTask);
+        
+        var ipFirewallConnections = ipFirewallConnectionsTask.Result;
+        var dhcpServerLeases = dhcpServerLeasesTask.Result;
+        var dnsCacheRecords = dnsCacheRecordsTask.Result;
         
         return Map(ipFirewallConnections, dhcpServerLeases, dnsCacheRecords);
     }

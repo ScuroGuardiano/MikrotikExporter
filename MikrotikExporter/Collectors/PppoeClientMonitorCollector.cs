@@ -11,7 +11,7 @@ namespace MikrotikExporter.Collectors;
 ///
 /// Frequency of change: low, not worth collecting more frequently than once per 30 seconds
 /// </summary>
-public class PppoeClientMonitorCollector : BaseCollector
+public class PppoeClientMonitorCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -20,9 +20,9 @@ public class PppoeClientMonitorCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }

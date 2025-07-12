@@ -1,5 +1,4 @@
 using MikrotikApiClient;
-using MikrotikApiClient.Tcp;
 
 namespace MikrotikExporter.Collectors;
 
@@ -16,6 +15,8 @@ public class MasterCollector
     private readonly IpFirewallRuleCollector _ipFirewallRuleCollector;
     private readonly IpFirewallConnectionCollector _ipFirewallConnectionCollector;
     private readonly WlanRegistrationCollector _wlanRegistrationCollector;
+    private readonly HealthCollector _healthCollector;
+    private readonly SystemResourceCollector _systemResourceCollector;
 
     public MasterCollector(IMikrotikConcurrentApiClient client)
     {
@@ -30,13 +31,13 @@ public class MasterCollector
         _ipFirewallRuleCollector = new IpFirewallRuleCollector(client);
         _ipFirewallConnectionCollector = new IpFirewallConnectionCollector(client);
         _wlanRegistrationCollector = new WlanRegistrationCollector(client);
+        _healthCollector = new HealthCollector(client);
+        _systemResourceCollector = new SystemResourceCollector(client);
     }
 
     public async Task<string> CollectAndStringify()
     {
         _collectTimeCollector.Start();
-        
-        var routerInfoTask = _routerInfoCollector.Collect();
         
         List<Task<MetricsCollection>> collectionsTasks =
         [
@@ -49,15 +50,16 @@ public class MasterCollector
             _ipFirewallRuleCollector.Collect(),
             _ipFirewallConnectionCollector.Collect(),
             _wlanRegistrationCollector.Collect(),
-
+            _healthCollector.Collect(),
+            _routerInfoCollector.Collect(),
+            _systemResourceCollector.Collect()
         ];
         
-        Task.WaitAll(collectionsTasks);
-        var routerInfo = await routerInfoTask;
+        await Task.WhenAll(collectionsTasks);
         var collectionTime = _collectTimeCollector.Collect();
         
         var collections = collectionsTasks.Select(t => t.Result).ToList();
-        collections.AddRange([..routerInfo, collectionTime]);
+        collections.Add(collectionTime);
         
         return string.Join('\n', collections.Select(c => c.ToString()));
     }

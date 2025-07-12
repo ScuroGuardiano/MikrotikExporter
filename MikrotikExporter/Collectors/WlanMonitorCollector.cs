@@ -10,7 +10,7 @@ namespace MikrotikExporter.Collectors;
 ///
 /// Frequency of change: medium, not worth collecting more frequently than once every 10 seconds
 /// </summary>
-public class WlanMonitorCollector : BaseCollector
+public class WlanMonitorCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -19,9 +19,9 @@ public class WlanMonitorCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }

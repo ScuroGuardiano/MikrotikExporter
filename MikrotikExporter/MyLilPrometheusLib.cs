@@ -259,6 +259,22 @@ public class MetricsCollection<T> : MetricsCollection
         _metrics.AddRange(infos.Select(i => i.CreateValueSet(staticLabels)));
     }
 
+    public void MergeWith(MetricsCollection<T> other)
+    {
+        _metrics.AddRange(other._metrics);
+    }
+
+    public static MetricsCollection<T> Merge(IEnumerable<MetricsCollection<T>> collections)
+    {
+        var result = new MetricsCollection<T>();
+        foreach (var collection in collections)
+        {
+            result.MergeWith(collection);
+        }
+        
+        return result;
+    }
+
     public void AddValue(T value)
     {
         foreach (var metric in _metrics)

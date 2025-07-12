@@ -12,7 +12,7 @@ namespace MikrotikExporter.Collectors;
 ///
 /// Frequency of change: medium? Like idk, I'd collect it once every 30 seconds tbh
 /// </summary>
-public class DhcpServerLeaseCollector : BaseCollector
+public class DhcpServerLeaseCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -21,9 +21,9 @@ public class DhcpServerLeaseCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }

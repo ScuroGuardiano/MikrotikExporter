@@ -8,9 +8,9 @@ namespace MikrotikExporter.Collectors;
 /// <summary>
 /// Router info collector
 ///
-/// Frequency of change: none, except for Uptime.
+/// Frequency of change: none
 /// </summary>
-public class RouterInfoCollector : BaseCollector
+public class RouterInfoCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -19,20 +19,25 @@ public class RouterInfoCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection[]> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
-            return [];
+            return MetricsCollection.Empty;
         }
         
-        var systemResource = await _client.GetSystemResource();
-        var identity = await _client.GetIdentity();
+        var systemResourceTask = _client.GetSystemResource();
+        var identityTask = _client.GetIdentity();
+        
+        await Task.WhenAll(systemResourceTask, identityTask);
+        
+        var systemResource = systemResourceTask.Result;
+        var identity = identityTask.Result;
         
         return Map(systemResource, identity);
     }
     
-    private MetricsCollection[] Map(SystemResource resource, string identity)
+    private MetricsCollection Map(SystemResource resource, string identity)
     {
         Dictionary<string, string> staticLabels = new()
         {
@@ -53,24 +58,27 @@ public class RouterInfoCollector : BaseCollector
         };
         
         var systemResourcesCollection = new MetricsCollection<SystemResource>();
-        var identityCollection = new MetricsCollection<string>();
+        var identityCollection = new MetricsCollection<SystemResource>();
         
         systemResourcesCollection.CreateValueSets(staticLabels,
-            TotalMemory, CpuCount, TotalHddSpace, Uptime
+            TotalMemory, CpuCount, TotalHddSpace
         );
         
         systemResourcesCollection.AddValue(resource);
         
         identityCollection.CreateValueSets(staticLabels, RouterInfo);
-        identityCollection.AddValue("1.0", routerInfoLabels);
         
-        return [systemResourcesCollection, identityCollection];
+        // Type is only to match type with system resource collector xD
+        // My library is shiiiiiiiit
+        identityCollection.AddValue(resource, routerInfoLabels);
+        
+        return MetricsCollection<SystemResource>.Merge([systemResourcesCollection, identityCollection]);
     }
     
-    private static readonly Gauge<string> RouterInfo = new(
+    private static readonly Gauge<SystemResource> RouterInfo = new(
         "mikrotik_router_info",
         "Router info",
-        i => i
+        i => "1.0"
     );
 
     private static readonly Gauge<SystemResource> TotalMemory = new(
@@ -89,11 +97,5 @@ public class RouterInfoCollector : BaseCollector
         "mikrotik_total_hdd_space",
         "Total HDD space",
         i => i.TotalHddSpace
-    );
-
-    private static readonly Gauge<SystemResource> Uptime = new(
-        "mikrotik_uptime",
-        "Uptime",
-        i => MikrotikTimeSpanConverter.ToSeconds(i.Uptime).ToString(CultureInfo.InvariantCulture)
     );
 }

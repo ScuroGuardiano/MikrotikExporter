@@ -5,7 +5,7 @@ using MikrotikApiClient.Tcp;
 
 namespace MikrotikExporter.Collectors;
 
-public class CollectTimeCollector : BaseCollector
+public class CollectTimeCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
     private long _startTimestamp;

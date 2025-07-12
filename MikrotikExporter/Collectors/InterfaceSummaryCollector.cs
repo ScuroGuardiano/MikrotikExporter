@@ -8,7 +8,7 @@ namespace MikrotikExporter.Collectors;
 /// This collector returns MetricsCollection and optionally interface summary list
 /// As this list will be needed for others collectors ;3
 /// </summary>
-public class InterfaceSummaryCollector : BaseCollector
+public class InterfaceSummaryCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -17,9 +17,9 @@ public class InterfaceSummaryCollector : BaseCollector
         _client = client;
     }
     
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }

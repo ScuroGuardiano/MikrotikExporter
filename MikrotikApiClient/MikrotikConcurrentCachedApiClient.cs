@@ -1,7 +1,6 @@
 using DotNext.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using MikrotikApiClient.Dto;
-using MikrotikApiClient.Tcp;
 
 namespace MikrotikApiClient;
 
@@ -12,7 +11,7 @@ public class MikrotikConcurrentCachedApiClient : IMikrotikConcurrentApiClient
     public MikrotikConcurrentCachedApiClient([FromKeyedServices("OriginalClient")] IMikrotikConcurrentApiClient client)
     {
         _client = client;
-
+            
         _interfaceSummaries = new AsyncLazy<InterfaceSummary[]>(ct => _client.GetInterfaces(ct));
         _dhcpLeases = new AsyncLazy<DhcpServerLease[]>(ct => _client.GetDhcpServerLeases(ct));
         _healthStats = new AsyncLazy<HealthStat[]>(ct => _client.GetHealthStats(ct));

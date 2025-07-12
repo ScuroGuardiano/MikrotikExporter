@@ -6,7 +6,7 @@ using MikrotikExporter.PrometheusMappers;
 
 namespace MikrotikExporter.Collectors;
 
-public class WlanRegistrationCollector : BaseCollector
+public class WlanRegistrationCollector
 {
     private readonly IMikrotikConcurrentApiClient _client;
 
@@ -15,17 +15,22 @@ public class WlanRegistrationCollector : BaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect()
+    public async Task<MetricsCollection> Collect(bool enabled = true)
     {
-        if (!Enabled)
+        if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var registrations = await _client.GetWlanRegistrations();
-        var dhcpLeases = await _client.GetDhcpServerLeases();
+        var registrationsTask = _client.GetWlanRegistrations();
+        var dhcpServerLeasesTask = _client.GetDhcpServerLeases();
         
-        return Map(registrations, dhcpLeases);
+        await Task.WhenAll(registrationsTask, dhcpServerLeasesTask);
+        
+        var registrations = registrationsTask.Result;
+        var dhcpServerLeases = dhcpServerLeasesTask.Result;
+        
+        return Map(registrations, dhcpServerLeases);
     }
 
     private MetricsCollection<WlanRegistration> Map(WlanRegistration[] registrations, DhcpServerLease[] leases)

@@ -5,7 +5,7 @@
 FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 RUN apt update
-RUN apt install -y clang llvm zlib1g-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
+RUN apt install -y file clang llvm zlib1g-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
 
 ARG BUILD_CONFIGURATION=Release
 ARG TARGETARCH=amd64
@@ -37,6 +37,7 @@ RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
     -r $(cat /tmp/rid) \
     -o /app/build
 
+RUN file /app/MikrotikExporter
 
 FROM debian:12-slim AS runtime
 RUN apt update
@@ -53,6 +54,5 @@ EXPOSE 5000
 
 COPY --from=build /app/build ./
 
-RUN file ./MikrotikExporter
 
 ENTRYPOINT ["./MikrotikExporter"] 

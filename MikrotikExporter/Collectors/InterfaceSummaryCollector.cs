@@ -59,79 +59,79 @@ public class InterfaceSummaryCollector
     }
     
     private static readonly Counter<InterfaceSummary> RxBytes = new (
-        "mikrotik_rx_bytes",
+        "mikrotik_rx_bytes_total",
         "Bytes received",
         i => i.RxByte
     );
 
     private static readonly Counter<InterfaceSummary> TxBytes = new (
-        "mikrotik_tx_bytes",
+        "mikrotik_tx_bytes_total",
         "Bytes sent",
         i => i.TxByte
     );
 
     private static readonly Counter<InterfaceSummary> RxPackets = new (
-        "mikrotik_rx_packets",
+        "mikrotik_rx_packets_total",
         "Packets received",
         i => i.RxPacket
     );
 
     private static readonly Counter<InterfaceSummary> TxPackets = new (
-        "mikrotik_tx_packets",
+        "mikrotik_tx_packets_total",
         "Packets sent",
         i => i.TxPacket
     );
 
     private static readonly Counter<InterfaceSummary> FpRxBytes = new (
-        "mikrotik_fp_rx_bytes",
+        "mikrotik_fp_rx_bytes_total",
         "Fast Path bytes received",
         i => i.FpRxByte
     );
     
     private static readonly Counter<InterfaceSummary> FpTxBytes = new (
-        "mikrotik_fp_tx_bytes",
+        "mikrotik_fp_tx_bytes_total",
         "Fast Path bytes sent",
         i => i.FpTxByte
     );
     
     private static readonly Counter<InterfaceSummary> FpRxPackets = new (
-        "mikrotik_fp_rx_packets",
+        "mikrotik_fp_rx_packets_total",
         "Fast Path packets received",
         i => i.FpRxPacket
     );
     
     private static readonly Counter<InterfaceSummary> FpTxPackets = new (
-        "mikrotik_fp_tx_packets",
+        "mikrotik_fp_tx_packets_total",
         "Fast Path packets sent",
         i => i.FpTxPacket
     );
     
     private static readonly Counter<InterfaceSummary> RxDrop = new (
-        "mikrotik_rx_drop",
+        "mikrotik_rx_drop_total",
         "RX dropped",
         i => i.RxDrop
     );
     
     private static readonly Counter<InterfaceSummary> TxDrop = new (
-        "mikrotik_tx_drop",
+        "mikrotik_tx_drop_total",
         "TX dropped",
         i => i.TxDrop
     );
     
     private static readonly Counter<InterfaceSummary> TxQueueDrop = new (
-        "mikrotik_tx_queue_drop",
+        "mikrotik_tx_queue_drop_total",
         "TX queue dropped",
         i => i.TxQueueDrop
     );
     
     private static readonly Counter<InterfaceSummary> RxError = new (
-        "mikrotik_rx_error",
+        "mikrotik_rx_error_total",
         "RX error",
         i => i.RxError
     );
     
     private static readonly Counter<InterfaceSummary> TxError = new (
-        "mikrotik_tx_error",
+        "mikrotik_tx_error_total",
         "TX error",
         i => i.TxError
     );

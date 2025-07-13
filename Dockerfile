@@ -17,7 +17,7 @@ WORKDIR /src
 RUN arch=$TARGETARCH \
     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
     && echo $TARGETOS-$arch > /tmp/rid \
-    && echo /tmp/rid
+    && cat /tmp/rid
     
 COPY . .
 

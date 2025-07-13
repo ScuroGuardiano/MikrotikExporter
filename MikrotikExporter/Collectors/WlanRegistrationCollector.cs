@@ -97,73 +97,73 @@ public class WlanRegistrationCollector
     }
 
     private static readonly Counter<WlanRegistration> TxPackets = new(
-        "mikrotik_wireless_client_tx_packets",
+        "mikrotik_wireless_client_tx_packets_total",
         "Packets transmitted TO the wireless client",
         i => i.TxPackets
     );
 
     private static readonly Counter<WlanRegistration> RxPackets = new(
-        "mikrotik_wireless_client_rx_packets",
+        "mikrotik_wireless_client_rx_packets_total",
         "Packets transmitted FROM the wireless client",
         i => i.RxPackets
     );
 
     private static readonly Counter<WlanRegistration> TxBytes = new(
-        "mikrotik_wireless_client_tx_bytes",
+        "mikrotik_wireless_client_tx_bytes_total",
         "Bytes transmitted TO the wireless client",
         i => i.TxBytes
     );
 
     private static readonly Counter<WlanRegistration> RxBytes = new(
-        "mikrotik_wireless_client_rx_bytes",
+        "mikrotik_wireless_client_rx_bytes_total",
         "Bytes transmitted FROM the wireless client",
         i => i.RxBytes
     );
 
     private static readonly Counter<WlanRegistration> TxFrames = new(
-        "mikrotik_wireless_client_tx_frames",
+        "mikrotik_wireless_client_tx_frames_total",
         "Frames transmitted TO the wireless client",
         i => i.TxFrames
     );
 
     private static readonly Counter<WlanRegistration> RxFrames = new(
-        "mikrotik_wireless_client_rx_frames",
+        "mikrotik_wireless_client_rx_frames_total",
         "Frames transmitted FROM the wireless client",
         i => i.RxFrames
     );
 
     private static readonly Counter<WlanRegistration> TxFrameBytes = new(
-        "mikrotik_wireless_client_tx_frame_bytes",
+        "mikrotik_wireless_client_tx_frame_bytes_total",
         "Frame bytes transmitted TO the wireless client",
         i => i.TxFrameBytes
     );
 
     private static readonly Counter<WlanRegistration> RxFrameBytes = new(
-        "mikrotik_wireless_client_rx_frame_bytes",
+        "mikrotik_wireless_client_rx_frame_bytes_total",
         "Frame bytes transmitted FROM the wireless client",
         i => i.RxFrameBytes
     );
 
     private static readonly Counter<WlanRegistration> TxHwFrames = new(
-        "mikrotik_wireless_client_tx_hw_frames",
+        "mikrotik_wireless_client_tx_hw_frames_total",
         "Hardware frames transmitted TO the wireless client",
         i => i.TxHwFrames
     );
 
     private static readonly Counter<WlanRegistration> RxHwFrames = new(
-        "mikrotik_wireless_client_rx_hw_frames",
+        "mikrotik_wireless_client_rx_hw_frames_total",
         "Hardware frames transmitted FROM the wireless client",
         i => i.RxHwFrames
     );
 
     private static readonly Counter<WlanRegistration> TxHwFrameBytes = new(
-        "mikrotik_wireless_client_tx_hw_frame_bytes",
+        "mikrotik_wireless_client_tx_hw_frame_bytes_total",
         "Hardware frame bytes transmitted TO the wireless client",
         i => i.TxHwFrameBytes
     );
 
     private static readonly Counter<WlanRegistration> RxHwFrameBytes = new(
-        "mikrotik_wireless_client_rx_hw_frame_bytes",
+        "mikrotik_wireless_client_rx_hw_frame_bytes_total",
         "Hardware frame bytes transmitted FROM the wireless client",
         i => i.RxHwFrameBytes
     );

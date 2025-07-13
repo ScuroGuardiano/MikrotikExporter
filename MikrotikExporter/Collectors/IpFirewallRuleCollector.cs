@@ -78,13 +78,13 @@ public class IpFirewallRuleCollector
     }
     
     private static readonly Counter<IpFirewallRule> FwBytes = new (
-        "mikrotik_ip_firewall_rule_bytes",
+        "mikrotik_ip_firewall_rule_bytes_total",
         "Passed bytes through the firewall rule",
         i => i.Bytes
     );
 
     private static readonly Counter<IpFirewallRule> FwPackets = new(
-        "mikrotik_ip_firewall_rule_packets",
+        "mikrotik_ip_firewall_rule_packets_total",
         "Passed packets through the firewall rule",
         i => i.Packets
     );

@@ -160,49 +160,49 @@ public class IpFirewallConnectionCollector
     );
     
     private static readonly Counter<IpFirewallConnection> OrigPackets = new(
-        "mikrotik_firewall_connection_orig_packets",
+        "mikrotik_firewall_connection_orig_packets_total",
         "Originating packets from source to destination within connection. In other words, it's sent packets",
         i => i.OrigPackets
     );
 
     private static readonly Counter<IpFirewallConnection> OrigBytes = new(
-        "mikrotik_firewall_connection_orig_bytes",
+        "mikrotik_firewall_connection_orig_bytes_total",
         "Originating bytes from source to destination within connection. In other words, it's sent bytes",
         i => i.OrigBytes
     );
 
     private static readonly Counter<IpFirewallConnection> ReplPackets = new(
-        "mikrotik_firewall_connection_repl_packets",
+        "mikrotik_firewall_connection_repl_packets_total",
         "Reply packets from destination to source within connection. In other words, it's received packets",
         i => i.ReplPackets
     );
 
     private static readonly Counter<IpFirewallConnection> ReplBytes = new(
-        "mikrotik_firewall_connection_repl_bytes",
+        "mikrotik_firewall_connection_repl_bytes_total",
         "Reply bytes from destination to source within connection. In other words, it's received bytes",
         i => i.ReplBytes
     );
 
     private static readonly Counter<IpFirewallConnection> OrigFasttrackPackets = new(
-        "mikrotik_firewall_connection_orig_fasttrack_packets",
+        "mikrotik_firewall_connection_orig_fasttrack_packets_total",
         "Originating fast tracked packets.",
         i => i.OrigFasttrackPackets
     );
 
     private static readonly Counter<IpFirewallConnection> OrigFasttrackBytes = new(
-        "mikrotik_firewall_connection_orig_fasttrack_bytes",
+        "mikrotik_firewall_connection_orig_fasttrack_bytes_total",
         "Originating fast tracked bytes.",
         i => i.OrigFasttrackBytes
     );
 
     private static readonly Counter<IpFirewallConnection> ReplFasttrackPackets = new(
-        "mikrotik_firewall_connection_repl_fasttrack_packets",
+        "mikrotik_firewall_connection_repl_fasttrack_packets_total",
         "Reply fast tracked packets.",
         i => i.ReplFasttrackPackets
     );
 
     private static readonly Counter<IpFirewallConnection> ReplFasttrackBytes = new(
-        "mikrotik_firewall_connection_repl_fasttrack_bytes",
+        "mikrotik_firewall_connection_repl_fasttrack_bytes_total",
         "Reply fast tracked bytes.",
         i => i.ReplFasttrackBytes
     );

@@ -16,7 +16,7 @@ jobs:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
         
-      - name: Login to Docker Hub
+      - name: Login to ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -33,5 +33,28 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/scuroguardiano/mikrotikexporter:latest
+          tags: ghcr.io/scuroguardiano/mikrotikexporter:${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}
+  
+  merge:
+    runs-on: ubuntu-latest
+    needs: docker
+    
+    steps:
+      - name: "Set up Docker Buildx"
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Login to ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+          
+      - name: Create and push multi-arch manifest
+        run: |
+          docker buildx imagetools create \
+            --tag ghcr.io/scuroguardiano/mikrotikexporter:latest \
+            ghcr.io/scuroguardiano/mikrotikexporter:amd64 \
+            ghcr.io/scuroguardiano/mikrotikexporter:arm64 \
+            ghcr.io/scuroguardiano/mikrotikexporter:arm

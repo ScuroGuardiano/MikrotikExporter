@@ -25,7 +25,7 @@ RUN arch=$TARGETARCH \
     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
     && echo $TARGETOS-musl-$arch > /tmp/rid 
 
-COPY --from=build /src ./
+COPY --from=prepare /src ./
 
 RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
     -c $BUILD_CONFIGURATION \

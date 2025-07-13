@@ -28,3 +28,4 @@ jobs:
         with:
           platforms: linux/amd64
           push: true
+          tags: type=raw,value=latest

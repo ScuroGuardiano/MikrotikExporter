@@ -1,26 +1,28 @@
 ﻿# AMD64 needs to be forced because compilation on ARM QEMU is fucked up.
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0-noble-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 ARG BUILD_CONFIGURATION=Release
-ARG TARGETARCH
-ARG TARGETOS
+ARG TARGETARCH=amd64
+ARG TARGETOS=linux
 
-# https://github.com/dotnet/sdk/issues/28971#issuecomment-1308881150
-RUN arch=$TARGETARCH \
-    && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
-    && echo $TARGETOS-$arch > /tmp/rid \
-    
 WORKDIR /src
 
+RUN apt update
+RUN apt install -y clang llvm
+
+# https://github.com/dotnet/sdk/issues/28971#issuecomment-1308881150
+#RUN arch=$TARGETARCH \
+#    && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
+#    && echo $TARGETOS-$arch > /tmp/rid 
+    
 COPY . .
 RUN dotnet restore "MikrotikExporter/MikrotikExporter.csproj"
 
 RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
     -c $BUILD_CONFIGURATION \
     --self-contained \
-    -r $(cat /tmp/rid) \
-    /p:PublishAot=true \
+#    -r $(cat /tmp/rid) \
     -o /app/build
 
 FROM debian:12-slim AS runtime

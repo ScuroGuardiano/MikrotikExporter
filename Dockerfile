@@ -2,7 +2,7 @@
 # little program with NativeAOT to ARMv7, we can't use ARMv7 image on QEMU.
 # It will fail with some hardware error XD
 # So we can cross-compile. But...
-FROM --platform=linux/amd64 mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-bookworm-slim-amd64 AS build
 
 RUN apt update
 RUN apt install -y file clang llvm zlib1g-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
@@ -40,8 +40,7 @@ RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
 RUN file /app/build/MikrotikExporter
 
 FROM debian:12-slim AS runtime
-RUN apt update
-RUN apt install -y libicu72
+RUN apt update && apt install -y libicu72 &&  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

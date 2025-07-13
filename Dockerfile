@@ -15,7 +15,7 @@ RUN arch=$TARGETARCH \
 
 WORKDIR /src
 
-RUN apk add --no-cache clang zlib-dev
+RUN apk add --no-cache clang zlib-dev build-base linux-headers binutils
 
 COPY . .
 RUN dotnet restore "MikrotikExporter/MikrotikExporter.csproj"

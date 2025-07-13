@@ -40,7 +40,7 @@ RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
 RUN file /app/build/MikrotikExporter
 
 FROM debian:12-slim AS runtime
-RUN apt update && apt install -y libicu72 &&  && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y libicu72 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

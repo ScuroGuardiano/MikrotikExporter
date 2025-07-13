@@ -37,7 +37,7 @@ RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
     -r $(cat /tmp/rid) \
     -o /app/build
 
-RUN file /app/MikrotikExporter
+RUN file /app/build/MikrotikExporter
 
 FROM debian:12-slim AS runtime
 RUN apt update

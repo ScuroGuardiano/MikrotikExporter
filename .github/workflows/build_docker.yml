@@ -33,5 +33,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/scuroguardiano/mikrotikexporter:${{ matrix.architecture }}
+          tags: ghcr.io/scuroguardiano/mikrotikexporter:latest
           platforms: linux/${{ matrix.architecture }}

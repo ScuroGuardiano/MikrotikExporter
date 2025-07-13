@@ -6,8 +6,6 @@ ARG BUILD_CONFIGURATION=Release
 ARG TARGETARCH
 ARG TARGETOS
 
-RUN apk add --no-cache clang zlib-dev
-
 # https://github.com/dotnet/sdk/issues/28971#issuecomment-1308881150
 RUN arch=$TARGETARCH \
     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \

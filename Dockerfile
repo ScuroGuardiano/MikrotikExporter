@@ -32,7 +32,6 @@ LABEL org.opencontainers.image.licenses=AGPLv3
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 EXPOSE 5000
-RUN apk add --no-cache libstdc++ icu-libs
 
 COPY --from=build /app/build ./
 

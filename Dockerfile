@@ -1,24 +1,31 @@
 ﻿# AMD64 needs to be forced because compilation on ARM QEMU is fucked up.
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-alpine-amd64 AS prepare
 
 ARG BUILD_CONFIGURATION=Release
 
+
+WORKDIR /src
+
+
+COPY . .
+RUN dotnet restore "MikrotikExporter/MikrotikExporter.csproj"
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+RUN apk add --no-cache clang zlib-dev
+
 ARG TARGETARCH
 ARG TARGETOS
+
+WORKDIR /src
 
 # https://github.com/dotnet/sdk/issues/28971#issuecomment-1308881150
 
 RUN arch=$TARGETARCH \
     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
-    && echo $TARGETOS-musl-$arch > /tmp/rid
+    && echo $TARGETOS-musl-$arch > /tmp/rid 
 
-WORKDIR /src
-
-RUN apk add --no-cache clang zlib-dev build-base linux-headers binutils binutils-aarch64 binutils-armv7
-
-COPY . .
-RUN dotnet restore "MikrotikExporter/MikrotikExporter.csproj"
+COPY --from=build /src ./
 
 RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
     -c $BUILD_CONFIGURATION \

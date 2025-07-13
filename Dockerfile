@@ -8,15 +8,16 @@ RUN apt update
 RUN apt install -y file clang llvm zlib1g-dev gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf
 
 ARG BUILD_CONFIGURATION=Release
-ARG TARGETARCH=amd64
-ARG TARGETOS=linux
+ARG TARGETARCH
+ARG TARGETOS
 
 WORKDIR /src
 
 # https://github.com/dotnet/sdk/issues/28971#issuecomment-1308881150
 RUN arch=$TARGETARCH \
     && if [ "$arch" = "amd64" ]; then arch="x64"; fi \
-    && echo $TARGETOS-$arch > /tmp/rid 
+    && echo $TARGETOS-$arch > /tmp/rid \
+    && echo /tmp/rid
     
 COPY . .
 

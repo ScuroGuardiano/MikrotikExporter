@@ -2,7 +2,7 @@
 
 ARG BUILDPLATFORM=linux/amd64
 
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0-preview-trixie-slim AS build
 
 RUN apt update
 RUN apt install -y clang llvm
@@ -21,7 +21,7 @@ RUN arch=$TARGETARCH \
 COPY . .
 RUN dotnet restore -r $(cat /tmp/rid)
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS publish
+FROM mcr.microsoft.com/dotnet/sdk:10.0-preview-trixie-slim AS publish
 
 RUN apt update
 RUN apt install -y clang llvm

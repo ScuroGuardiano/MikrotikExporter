@@ -30,5 +30,5 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name | tolower }}:${{ matrix.architecture }}
+          tags: ghcr.io/scuroguardiano/mikrotikexporter:${{ matrix.architecture }}
           platforms: linux/${{ matrix.architecture }}

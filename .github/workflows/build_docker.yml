@@ -6,6 +6,9 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        architecture: [amd64]
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main
@@ -26,6 +29,6 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64
           push: true
-          tags: type=raw,value=latest
+          tags: user/app:${{ matrix.architecture }}
+          platforms: linux/${{ matrix.architecture }}

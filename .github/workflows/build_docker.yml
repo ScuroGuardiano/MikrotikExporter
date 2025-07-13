@@ -11,7 +11,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        architecture: [amd64, arm64]
+        architecture: [amd64, 'arm', arm64]
     steps:
       - name: 'Checkout GitHub Action'
         uses: actions/checkout@main

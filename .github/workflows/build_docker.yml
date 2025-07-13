@@ -28,4 +28,3 @@ jobs:
         with:
           platforms: linux/amd64
           push: true
-          tags: scuroguardiano/mikrotik-exporter:latest

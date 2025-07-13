@@ -53,4 +53,6 @@ EXPOSE 5000
 
 COPY --from=build /app/build ./
 
+RUN file ./MikrotikExporter
+
 ENTRYPOINT ["./MikrotikExporter"] 

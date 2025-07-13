@@ -1,6 +1,6 @@
 ﻿# AMD64 needs to be forced because compilation on ARM QEMU is fucked up.
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0-amd64 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0-noble-amd64 AS build
 
 ARG BUILD_CONFIGURATION=Release
 ARG TARGETARCH

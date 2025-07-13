@@ -35,24 +35,24 @@ public class MasterCollector
         _systemResourceCollector = new SystemResourceCollector(client);
     }
 
-    public async Task<string> CollectAndStringify()
+    public async Task<string> CollectAndStringify(CancellationToken cancellationToken = default)
     {
         _collectTimeCollector.Start();
         
         List<Task<MetricsCollection>> collectionsTasks =
         [
-            _summaryCollector.Collect(),
-            _etherMonitorCollector.Collect(),
-            _wlanMonitorCollector.Collect(),
-            _pppoeClientMonitorCollector.Collect(),
-            _dhcpServerLeaseCollector.Collect(),
-            _ipPoolCollector.Collect(),
-            _ipFirewallRuleCollector.Collect(),
-            _ipFirewallConnectionCollector.Collect(),
-            _wlanRegistrationCollector.Collect(),
-            _healthCollector.Collect(),
-            _routerInfoCollector.Collect(),
-            _systemResourceCollector.Collect()
+            _summaryCollector.Collect(cancellationToken: cancellationToken),
+            _etherMonitorCollector.Collect(cancellationToken: cancellationToken),
+            _wlanMonitorCollector.Collect(cancellationToken: cancellationToken),
+            _pppoeClientMonitorCollector.Collect(cancellationToken: cancellationToken),
+            _dhcpServerLeaseCollector.Collect(cancellationToken: cancellationToken),
+            _ipPoolCollector.Collect(cancellationToken: cancellationToken),
+            _ipFirewallRuleCollector.Collect(cancellationToken: cancellationToken),
+            _ipFirewallConnectionCollector.Collect(cancellationToken: cancellationToken),
+            _wlanRegistrationCollector.Collect(cancellationToken: cancellationToken),
+            _healthCollector.Collect(cancellationToken: cancellationToken),
+            _routerInfoCollector.Collect(cancellationToken: cancellationToken),
+            _systemResourceCollector.Collect(cancellationToken: cancellationToken)
         ];
         
         await Task.WhenAll(collectionsTasks);
@@ -64,7 +64,7 @@ public class MasterCollector
         return string.Join('\n', collections.Select(c => c.ToString()));
     }
 
-    public async Task<string> CollectAndStringify(IReadOnlySet<Type> enableList)
+    public async Task<string> CollectAndStringify(IReadOnlySet<Type> enableList, CancellationToken cancellationToken = default)
     {
         _collectTimeCollector.Start();
         
@@ -72,18 +72,18 @@ public class MasterCollector
         
         List<Task<MetricsCollection>> collectionsTasks =
         [
-            _summaryCollector.Collect(enableList.Contains(_summaryCollector.GetType())),
-            _etherMonitorCollector.Collect(enableList.Contains(_etherMonitorCollector.GetType())),
-            _wlanMonitorCollector.Collect(enableList.Contains(_wlanMonitorCollector.GetType())),
-            _pppoeClientMonitorCollector.Collect(enableList.Contains(_pppoeClientMonitorCollector.GetType())),
-            _dhcpServerLeaseCollector.Collect(enableList.Contains(_dhcpServerLeaseCollector.GetType())),
-            _ipPoolCollector.Collect(enableList.Contains(_ipPoolCollector.GetType())),
-            _ipFirewallRuleCollector.Collect(enableList.Contains(_ipFirewallRuleCollector.GetType())),
-            _ipFirewallConnectionCollector.Collect(enableList.Contains(_ipFirewallConnectionCollector.GetType())),
-            _wlanRegistrationCollector.Collect(enableList.Contains(_wlanRegistrationCollector.GetType())),
-            _healthCollector.Collect(enableList.Contains(_healthCollector.GetType())),
-            _routerInfoCollector.Collect(enableList.Contains(_routerInfoCollector.GetType())),
-            _systemResourceCollector.Collect(enableList.Contains(_systemResourceCollector.GetType()))
+            _summaryCollector.Collect(enableList.Contains(_summaryCollector.GetType()), cancellationToken),
+            _etherMonitorCollector.Collect(enableList.Contains(_etherMonitorCollector.GetType()), cancellationToken),
+            _wlanMonitorCollector.Collect(enableList.Contains(_wlanMonitorCollector.GetType()), cancellationToken),
+            _pppoeClientMonitorCollector.Collect(enableList.Contains(_pppoeClientMonitorCollector.GetType()), cancellationToken),
+            _dhcpServerLeaseCollector.Collect(enableList.Contains(_dhcpServerLeaseCollector.GetType()), cancellationToken),
+            _ipPoolCollector.Collect(enableList.Contains(_ipPoolCollector.GetType()), cancellationToken),
+            _ipFirewallRuleCollector.Collect(enableList.Contains(_ipFirewallRuleCollector.GetType()), cancellationToken),
+            _ipFirewallConnectionCollector.Collect(enableList.Contains(_ipFirewallConnectionCollector.GetType()), cancellationToken),
+            _wlanRegistrationCollector.Collect(enableList.Contains(_wlanRegistrationCollector.GetType()), cancellationToken),
+            _healthCollector.Collect(enableList.Contains(_healthCollector.GetType()), cancellationToken),
+            _routerInfoCollector.Collect(enableList.Contains(_routerInfoCollector.GetType()), cancellationToken),
+            _systemResourceCollector.Collect(enableList.Contains(_systemResourceCollector.GetType()), cancellationToken)
         ];
         
         await Task.WhenAll(collectionsTasks);

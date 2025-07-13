@@ -1,4 +1,4 @@
-using System.Xml;
+using Microsoft.AspNetCore.Diagnostics;
 using MikrotikApiClient;
 using MikrotikExporter;
 using MikrotikExporter.Collectors;
@@ -10,27 +10,50 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, MkJsonSerializerContext.Default);
 });
 
+builder.Logging.AddSimpleConsole();
+
 builder.Services.AddResponseCompression();
 
 builder.Services.AddMikrotikPooledApiClient(builder.Configuration);
-
 builder.Services.AddScoped<MasterCollector>();
 
 var app = builder.Build();
 
 app.UseResponseCompression();
 
-app.MapGet("/metrics", async (MasterCollector collector) => await collector.CollectAndStringify());
+app.UseExceptionHandler(handlerBuilder =>
+{
+    handlerBuilder.Run(async context =>
+    {
+        var exception = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+        if (exception is MikrotikException)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "text/plain";
+            
+            await context.Response.WriteAsync(exception.Message);
+        }
+    });
+});
+
+app.MapGet("/metrics", async (MasterCollector collector, CancellationToken cancellationToken)
+    => await collector.CollectAndStringify(cancellationToken));
 
 // Presets
-app.MapGet("/metrics/presets/low-freq", async (MasterCollector collector)
-    => await collector.CollectAndStringify(CollectionPresets.LowFrequencyOfChange));
+app.MapGet("/metrics/presets/low-freq", async (MasterCollector collector, CancellationToken cancellationToken)
+    => await collector.CollectAndStringify(CollectionPresets.LowFrequencyOfChange, cancellationToken));
 
-app.MapGet("/metrics/presets/medium-freq", async (MasterCollector collector)
-    => await collector.CollectAndStringify(CollectionPresets.MediumFrequencyOfChange));
+app.MapGet("/metrics/presets/medium-freq", async (MasterCollector collector, CancellationToken cancellationToken)
+    => await collector.CollectAndStringify(CollectionPresets.MediumFrequencyOfChange, cancellationToken));
 
-app.MapGet("/metrics/presets/high-freq", async (MasterCollector collector)
-    => await collector.CollectAndStringify(CollectionPresets.HighFrequencyOfChange));
+app.MapGet("/metrics/presets/high-freq", async (MasterCollector collector, CancellationToken cancellationToken)
+    => await collector.CollectAndStringify(CollectionPresets.HighFrequencyOfChange, cancellationToken));
+
+app.MapGet("/metrics/presets/{*preset}", (string preset) =>
+{
+    Results.NotFound($"Preset {preset} does not exists.");
+});
 
 // Only specific metrics
 
@@ -50,7 +73,7 @@ var collectorsMap = new Dictionary<string, Type>()
     ["firewall-conn"] = typeof(IpFirewallConnectionCollector)
 }.AsReadOnly();
 
-app.MapGet("/metrics/{*selected}", async (MasterCollector collector, string selected) =>
+app.MapGet("/metrics/{*selected}", async (MasterCollector collector, string selected, CancellationToken cancellationToken) =>
 { 
     var mapped = selected.Split('/', StringSplitOptions.RemoveEmptyEntries)
         .Select(s => collectorsMap.GetValueOrDefault(s))
@@ -60,10 +83,10 @@ app.MapGet("/metrics/{*selected}", async (MasterCollector collector, string sele
 
     if (mapped.Count == 0)
     {
-        return Results.BadRequest("No valid metrics selected");
+        return Results.NotFound("No valid metrics selected");
     }
     
-    return Results.Ok(await collector.CollectAndStringify(mapped));
+    return Results.Text(await collector.CollectAndStringify(mapped, cancellationToken));
 });
 
 app.Run();

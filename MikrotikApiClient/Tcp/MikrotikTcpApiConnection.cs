@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Net.Sockets;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace MikrotikApiClient.Tcp;
 
@@ -9,19 +10,23 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
     private readonly string _host;
     private readonly string _username;
     private readonly string _password;
-    
+    private readonly ILogger? _logger;
+
     private readonly byte[] _readLenBuffer = new byte[4];
     private readonly byte[] _writeLenBuffer = new byte[5];
     private bool _running = false;
 
     private readonly TcpClient _client;
     
-    public MikrotikTcpApiConnection(string host, string username, string password)
+    public MikrotikTcpApiConnection(string host, string username, string password, ILogger? logger = null)
     {
         _host = host;
         _username = username;
         _password = password;
+        _logger = logger;
         _client = new TcpClient();
+        _client.SendTimeout = 10000;
+        _client.ReceiveTimeout = 10000;
     }
 
 
@@ -37,7 +42,13 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
     {
         if (!_client.Connected)
         {
+            _logger?.LogInformation("Starting TCP connection to Mikrotik");
             await OpenSocket(cancellationToken);
+            _logger?.LogInformation(
+                "TCP connection opened {Src} -> {Dst}",
+                _client.Client.LocalEndPoint?.Serialize().ToString(),
+                _client.Client.RemoteEndPoint?.Serialize().ToString()
+            );
         }
         
         await Login(cancellationToken);
@@ -47,12 +58,21 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
 
     private async Task Login(CancellationToken cancellationToken = default)
     {
+        _logger?.LogInformation("Authenticating TCP connection to Mikrotik");
+        
         var res = await Request(["/login", $"=name={_username}", $"=password={_password}"], cancellationToken);
-        res.EnsureSuccess();
+        res.EnsureSuccess(_logger);
+        
+        _logger?.LogInformation("Authenticated TCP connection to Mikrotik");
     }
     
-    public async Task<MikrotikResponse> Request(IEnumerable<string> sentence, CancellationToken cancellationToken = default)
+    public async Task<MikrotikResponse> Request(string[] sentence, CancellationToken cancellationToken = default)
     {
+        if (sentence.Length == 0)
+        {
+            throw new Exception("Sentence is empty");
+        }
+        
         await WriteSentence(sentence, cancellationToken);
         List<MikrotikSentence> sentences = [];
 
@@ -67,6 +87,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         {
             Sentences = sentences,
             ContainsErrors = sentences.Any(s => s.IsError),
+            RequestSentence = sentence,
         };
     }
 
@@ -302,8 +323,6 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         var bytes = Encoding.UTF8.GetBytes(s);
         await WriteBytes(bytes, cancellationToken);
     }
-
-
 
     public void Dispose()
     {

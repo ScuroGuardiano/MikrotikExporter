@@ -19,15 +19,15 @@ public class WlanRegistrationCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var registrationsTask = _client.GetWlanRegistrations();
-        var dhcpServerLeasesTask = _client.GetDhcpServerLeases();
+        var registrationsTask = _client.GetWlanRegistrations(cancellationToken);
+        var dhcpServerLeasesTask = _client.GetDhcpServerLeases(cancellationToken);
         
         await Task.WhenAll(registrationsTask, dhcpServerLeasesTask);
         

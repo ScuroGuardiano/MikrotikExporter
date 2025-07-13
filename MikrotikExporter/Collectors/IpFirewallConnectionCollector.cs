@@ -31,16 +31,16 @@ public class IpFirewallConnectionCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var ipFirewallConnectionsTask = _client.GetIpFirewallConnections();
-        var dhcpServerLeasesTask = _client.GetDhcpServerLeases();
-        var dnsCacheRecordsTask = _client.GetDnsCacheRecords();
+        var ipFirewallConnectionsTask = _client.GetIpFirewallConnections(cancellationToken);
+        var dhcpServerLeasesTask = _client.GetDhcpServerLeases(cancellationToken);
+        var dnsCacheRecordsTask = _client.GetDnsCacheRecords(cancellationToken);
         
         await Task.WhenAll(ipFirewallConnectionsTask,  dhcpServerLeasesTask, dnsCacheRecordsTask);
         

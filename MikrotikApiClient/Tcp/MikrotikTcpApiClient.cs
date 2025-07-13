@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MikrotikApiClient.Dto;
 using MikrotikApiClient.Tcp.Parsers;
@@ -12,10 +13,13 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public string Host => _options.Host;
     public string Name => _options.Name ?? Host;
 
-    public MikrotikTcpApiClient(IOptions<MikrotikApiClientOptions> options)
+    private readonly ILogger<MikrotikTcpApiClient> _logger;
+
+    public MikrotikTcpApiClient(IOptions<MikrotikApiClientOptions> options, ILogger<MikrotikTcpApiClient> logger)
     {
+        _logger = logger;
         _options = options.Value;
-        _connection = new MikrotikTcpApiConnection(_options.Host, _options.Username, _options.Password);
+        _connection = new MikrotikTcpApiConnection(_options.Host, _options.Username, _options.Password, logger);
     }
     
     public async Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default)
@@ -23,7 +27,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         await _connection.EnsureRunning(cancellationToken);
         
         var res = await _connection.Request(["/interface/print"], cancellationToken);
-        res.EnsureSuccess();
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
@@ -40,7 +44,9 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
         ], cancellationToken);
-
+        
+        res.EnsureSuccess(_logger);
+        
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToEtherInterfaceMonitor())
@@ -57,6 +63,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
         ], cancellationToken);
+        
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
@@ -75,6 +83,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             $"=numbers={string.Join(',', numbers)}"
         ],  cancellationToken);
         
+        res.EnsureSuccess(_logger);
+        
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToPppoeClientMonitor())
@@ -86,6 +96,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         await _connection.EnsureRunning(cancellationToken);
         
         var res = await _connection.Request(["/system/health/print"], cancellationToken);
+        
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
@@ -99,17 +111,27 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         
         var res = await _connection.Request(["/system/resource/print"], cancellationToken);
 
-        // TODO: Make it cleaner after adding error handling XD
-        return res.Sentences
+        res.EnsureSuccess(_logger);
+        
+        var systemRes = res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToSystemResource())
-            .First();
+            .FirstOrDefault();
+
+        if (systemRes is null)
+        {
+            throw new MikrotikException("/system/resource/print", res.RequestSentence, "Received unexpected [empty] answer.");
+        }
+        
+        return systemRes;
     }
 
     public async Task<DhcpServerLease[]> GetDhcpServerLeases(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/ip/dhcp-server/lease/print"], cancellationToken);
+        
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
@@ -121,6 +143,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/ip/firewall/connection/print"], cancellationToken);
+        
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
@@ -136,6 +160,11 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         var filter = await _connection.Request(["/ip/firewall/filter/print"], cancellationToken);
         var mangle = await _connection.Request(["/ip/firewall/mangle/print"], cancellationToken);
         var nat = await _connection.Request(["/ip/firewall/nat/print"], cancellationToken);
+        
+        raw.EnsureSuccess(_logger);
+        filter.EnsureSuccess(_logger);
+        mangle.EnsureSuccess(_logger);
+        nat.EnsureSuccess(_logger);
 
         var rawParsed = raw.Sentences
             .Where(s => s.Reply == "!re")
@@ -162,6 +191,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/ip/pool/print"], cancellationToken);
         
+        res.EnsureSuccess(_logger);
+        
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToIpPool())
@@ -173,6 +204,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/system/identity/print"], cancellationToken);
 
+        res.EnsureSuccess(_logger);
+        
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.Attributes["name"])
@@ -184,6 +217,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/ip/dns/cache/print"], cancellationToken);
 
+        res.EnsureSuccess(_logger);
+        
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToDnsRecord())
@@ -194,6 +229,8 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         var res = await _connection.Request(["/interface/wireless/registration-table/print"], cancellationToken);
+        
+        res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")

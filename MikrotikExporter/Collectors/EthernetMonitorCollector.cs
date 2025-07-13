@@ -16,14 +16,14 @@ public class EthernetMonitorCollector
         _client = client;
     }
     
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var interfaces = await _client.GetInterfaces();
+        var interfaces = await _client.GetInterfaces(cancellationToken);
         
         // I am only fetching metrics for SFP
         // because ether interfaces does not have anything interesting in them
@@ -32,8 +32,7 @@ public class EthernetMonitorCollector
             interfaces.Where(i => i.Running == "true")
                 .Where(i => i.Type == "ether")
                 .Where(i => i.DefaultName.StartsWith("sfp"))
-                .Select(i => i.Id)
-        );
+                .Select(i => i.Id), cancellationToken);
 
         return Map(etherMonitors);
     }

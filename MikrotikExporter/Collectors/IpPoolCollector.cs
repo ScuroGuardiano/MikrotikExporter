@@ -16,14 +16,14 @@ public class IpPoolCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var ipPools = await _client.GetIpPools();
+        var ipPools = await _client.GetIpPools(cancellationToken);
 
         return Map(ipPools);
     }

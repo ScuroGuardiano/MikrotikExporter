@@ -21,14 +21,14 @@ public class DhcpServerLeaseCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var dhcpLeases = await _client.GetDhcpServerLeases();
+        var dhcpLeases = await _client.GetDhcpServerLeases(cancellationToken);
 
         return Map(dhcpLeases);
     }

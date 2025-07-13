@@ -19,18 +19,18 @@ public class WlanMonitorCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var interfaces = await _client.GetInterfaces();
+        var interfaces = await _client.GetInterfaces(cancellationToken);
         
         var ifaces = interfaces.Where(i => i.Type == "wlan").ToArray();
         
-        var monitors = await _client.GetWlanMonitor(ifaces.Select(i => i.Id));
+        var monitors = await _client.GetWlanMonitor(ifaces.Select(i => i.Id), cancellationToken);
         
         for (var i = 0; i < Math.Min(monitors.Length, ifaces.Length); i++)
         {

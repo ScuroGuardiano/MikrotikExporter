@@ -17,14 +17,14 @@ public class InterfaceSummaryCollector
         _client = client;
     }
     
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
 
-        return Map(await _client.GetInterfaces());
+        return Map(await _client.GetInterfaces(cancellationToken));
     }
 
     public MetricsCollection Map(InterfaceSummary[] interfaces)

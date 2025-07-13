@@ -19,15 +19,15 @@ public class RouterInfoCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var systemResourceTask = _client.GetSystemResource();
-        var identityTask = _client.GetIdentity();
+        var systemResourceTask = _client.GetSystemResource(cancellationToken);
+        var identityTask = _client.GetIdentity(cancellationToken);
         
         await Task.WhenAll(systemResourceTask, identityTask);
         

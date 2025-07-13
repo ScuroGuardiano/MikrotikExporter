@@ -15,14 +15,14 @@ public class HealthCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
 
-        var healthRecords = await _client.GetHealthStats();
+        var healthRecords = await _client.GetHealthStats(cancellationToken);
         
         // Alright, this will be kinda different because, frankly, I don't know how much stats can be exported here.
         // So I will create metrics dynamically.

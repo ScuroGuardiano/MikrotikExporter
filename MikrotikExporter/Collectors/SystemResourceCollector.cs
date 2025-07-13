@@ -21,14 +21,14 @@ public class SystemResourceCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var resource = await _client.GetSystemResource();
+        var resource = await _client.GetSystemResource(cancellationToken);
 
         Dictionary<string, string> staticLabels = new()
         {

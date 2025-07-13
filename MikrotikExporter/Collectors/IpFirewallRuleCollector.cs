@@ -16,14 +16,14 @@ public class IpFirewallRuleCollector
         _client = client;
     }
 
-    public async Task<MetricsCollection> Collect(bool enabled = true)
+    public async Task<MetricsCollection> Collect(bool enabled = true, CancellationToken cancellationToken = default)
     {
         if (!enabled)
         {
             return MetricsCollection.Empty;
         }
         
-        var rules = await _client.GetIpFirewallRules();
+        var rules = await _client.GetIpFirewallRules(cancellationToken);
         
         return Map(rules);
     }

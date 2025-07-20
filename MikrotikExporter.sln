@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikrotikExporter", "Mikroti
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MikrotikApiClient", "MikrotikApiClient\MikrotikApiClient.csproj", "{581D6B5B-3299-4309-B46E-1BB1FA3ECC0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Benchmarks", "Benchmarks\Benchmarks.csproj", "{C1A79C50-F26A-4DCE-A9DD-BC08F77788C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{581D6B5B-3299-4309-B46E-1BB1FA3ECC0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{581D6B5B-3299-4309-B46E-1BB1FA3ECC0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{581D6B5B-3299-4309-B46E-1BB1FA3ECC0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1A79C50-F26A-4DCE-A9DD-BC08F77788C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1A79C50-F26A-4DCE-A9DD-BC08F77788C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1A79C50-F26A-4DCE-A9DD-BC08F77788C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1A79C50-F26A-4DCE-A9DD-BC08F77788C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

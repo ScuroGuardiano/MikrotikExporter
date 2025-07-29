@@ -26,7 +26,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         
-        var res = await _connection.Request(["/interface/print"], cancellationToken);
+        var res = await _connection.Request(["/interface/print"]);
         res.EnsureSuccess(_logger);
         
         return res.Sentences
@@ -43,7 +43,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             "/interface/ethernet/monitor",
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
-        ], cancellationToken);
+        ]);
         
         res.EnsureSuccess(_logger);
         
@@ -62,7 +62,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             "/interface/wireless/monitor",
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
-        ], cancellationToken);
+        ]);
         
         res.EnsureSuccess(_logger);
         
@@ -81,7 +81,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
             "/interface/pppoe-client/monitor",
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
-        ],  cancellationToken);
+        ]);
         
         res.EnsureSuccess(_logger);
         
@@ -95,7 +95,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         
-        var res = await _connection.Request(["/system/health/print"], cancellationToken);
+        var res = await _connection.Request(["/system/health/print"]);
         
         res.EnsureSuccess(_logger);
         
@@ -109,7 +109,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         
-        var res = await _connection.Request(["/system/resource/print"], cancellationToken);
+        var res = await _connection.Request(["/system/resource/print"]);
 
         res.EnsureSuccess(_logger);
         
@@ -129,7 +129,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<DhcpServerLease[]> GetDhcpServerLeases(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/ip/dhcp-server/lease/print"], cancellationToken);
+        var res = await _connection.Request(["/ip/dhcp-server/lease/print"]);
         
         res.EnsureSuccess(_logger);
         
@@ -142,7 +142,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<IpFirewallConnection[]> GetIpFirewallConnections(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/ip/firewall/connection/print"], cancellationToken);
+        var res = await _connection.Request(["/ip/firewall/connection/print"]);
         
         res.EnsureSuccess(_logger);
         
@@ -156,10 +156,10 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     {
         await _connection.EnsureRunning(cancellationToken);
         
-        var raw = await _connection.Request(["/ip/firewall/raw/print"], cancellationToken);
-        var filter = await _connection.Request(["/ip/firewall/filter/print"], cancellationToken);
-        var mangle = await _connection.Request(["/ip/firewall/mangle/print"], cancellationToken);
-        var nat = await _connection.Request(["/ip/firewall/nat/print"], cancellationToken);
+        var raw = await _connection.Request(["/ip/firewall/raw/print"]);
+        var filter = await _connection.Request(["/ip/firewall/filter/print"]);
+        var mangle = await _connection.Request(["/ip/firewall/mangle/print"]);
+        var nat = await _connection.Request(["/ip/firewall/nat/print"]);
         
         raw.EnsureSuccess(_logger);
         filter.EnsureSuccess(_logger);
@@ -189,7 +189,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<IpPool[]> GetIpPools(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/ip/pool/print"], cancellationToken);
+        var res = await _connection.Request(["/ip/pool/print"]);
         
         res.EnsureSuccess(_logger);
         
@@ -202,7 +202,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<string> GetIdentity(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/system/identity/print"], cancellationToken);
+        var res = await _connection.Request(["/system/identity/print"]);
 
         res.EnsureSuccess(_logger);
         
@@ -215,7 +215,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<DnsCacheRecord[]> GetDnsCacheRecords(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/ip/dns/cache/print"], cancellationToken);
+        var res = await _connection.Request(["/ip/dns/cache/print"]);
 
         res.EnsureSuccess(_logger);
         
@@ -228,7 +228,7 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<WlanRegistration[]> GetWlanRegistrations(CancellationToken cancellationToken = default)
     {
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/interface/wireless/registration-table/print"], cancellationToken);
+        var res = await _connection.Request(["/interface/wireless/registration-table/print"]);
         
         res.EnsureSuccess(_logger);
         

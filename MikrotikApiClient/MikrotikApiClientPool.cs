@@ -157,6 +157,10 @@ file static class ConcurrentBagExtensions
 
             throw new UnreachableException("ConcurrentBag had no element in it, which is unexpected.");
         }
+        catch (OperationCanceledException)
+        {
+            throw; // Don't release semaphore if wait has been cancelled
+        }
         catch
         {
             semaphore.Release();

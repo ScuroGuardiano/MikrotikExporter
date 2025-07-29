@@ -15,6 +15,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
     private readonly byte[] _readLenBuffer = new byte[4];
     private readonly byte[] _writeLenBuffer = new byte[5];
     private bool _running = false;
+    private readonly MemoryStream _bufferStream = new(256 * 1024);
 
     private readonly TcpClient _client;
     
@@ -60,25 +61,34 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
     {
         _logger?.LogInformation("Authenticating TCP connection to Mikrotik");
         
-        var res = await Request(["/login", $"=name={_username}", $"=password={_password}"], cancellationToken);
+        var res = await Request(["/login", $"=name={_username}", $"=password={_password}"]);
         res.EnsureSuccess(_logger);
         
         _logger?.LogInformation("Authenticated TCP connection to Mikrotik");
     }
     
-    public async Task<MikrotikResponse> Request(string[] sentence, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// This method has no cancellation token because writing and reading can't be stopped.
+    /// Otherwise the state of connection may remain invalid, that's the limitation of long-living connections.
+    /// </summary>
+    /// <param name="sentence"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public async Task<MikrotikResponse> Request(string[] sentence)
     {
         if (sentence.Length == 0)
         {
             throw new Exception("Sentence is empty");
         }
         
-        await WriteSentence(sentence, cancellationToken);
+        await WriteSentence(sentence);
+        await CopyResponseToBuffer();
+        
         List<MikrotikSentence> sentences = [];
 
-        for (var resSentence = await ReadSentence();
+        for (var resSentence = ReadSentence();
              !resSentence.IsDone;
-             resSentence = await ReadSentence())
+             resSentence = ReadSentence())
         {
             sentences.Add(resSentence);
         }
@@ -91,31 +101,73 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         };
     }
 
-    private async Task WriteSentence(IEnumerable<string> words, CancellationToken cancellationToken)
+
+    // Each Mikrotik API response stream ends with `!done\0`
+    // So that's how I know it's the end of stream
+    private static readonly ReadOnlyMemory<byte> ResponseEnd = "!done\0"u8.ToArray();
+    private readonly byte[] _responseEndBuffer = new byte[ResponseEnd.Length];
+    private async Task CopyResponseToBuffer()
+    {
+        var buffer = ArrayPool<byte>.Shared.Rent(16 * 1024);
+        
+        var netstream = _client.GetStream();
+        _bufferStream.Seek(0, SeekOrigin.Begin);
+        
+        try
+        {
+            while (true)
+            {
+                var read = await netstream.ReadAsync(buffer);
+                _bufferStream.Write(buffer, 0, read);
+
+                if (_bufferStream.Position < ResponseEnd.Length)
+                {
+                    continue;
+                }
+                
+                // Check for response end.
+                _bufferStream.Seek(-ResponseEnd.Length, SeekOrigin.Current);
+                _bufferStream.ReadExactly(_responseEndBuffer);
+                
+                if (_responseEndBuffer.AsSpan().SequenceEqual(ResponseEnd.Span))
+                {
+                    // end of stream
+                    _bufferStream.Seek(0, SeekOrigin.Begin);
+                    return;
+                }
+            }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
+    }
+    
+    private async Task WriteSentence(IEnumerable<string> words)
     {
         foreach (var word in words)
         {
-            await WriteWord(word, cancellationToken);
+            await WriteWord(word);
         }
 
         // Every sentence ends with an empty word
-        await WriteWord("", cancellationToken);
+        await WriteWord("");
     }
     
-    private async Task WriteWord(string word, CancellationToken cancellationToken = default)
+    private async Task WriteWord(string word)
     {
-        await WriteLength((uint)word.Length, cancellationToken);
-        await WriteString(word, cancellationToken);
+        await WriteLength((uint)word.Length);
+        await WriteString(word);
     }
 
-    private async Task<MikrotikSentence> ReadSentence()
+    private MikrotikSentence ReadSentence()
     {
         // First word is reply
-        var reply = await ReadWord();
+        var reply = ReadWord();
         string? tag = null;
         Dictionary<string, string> attributes = new();
         
-        for (ReadOnlySpan<char> word = await ReadWord(); word != string.Empty; word = await ReadWord())
+        for (ReadOnlySpan<char> word = ReadWord(); word != string.Empty; word = ReadWord())
         {
             if (word.StartsWith(".tag"))
             {
@@ -138,9 +190,9 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         };
     }
 
-    private async Task<string> ReadWord(CancellationToken cancellationToken = default)
+    private string ReadWord()
     {
-        var len = (int) await ReadLength(cancellationToken);
+        var len = (int) ReadLength();
 
         if (len == 0)
         {
@@ -151,7 +203,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         
         try
         {
-            await _client.GetStream().ReadExactlyAsync(buffer, 0, len, cancellationToken);
+            _bufferStream.ReadExactly(buffer, 0, len);
             return Encoding.UTF8.GetString(buffer, 0, len);
         }
         finally
@@ -169,7 +221,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         await _client.ConnectAsync(host, port, cancellationToken);
     }
 
-    private void CloseSocket(CancellationToken cancellationToken = default)
+    private void CloseSocket()
     {
         _client.Close();
     }
@@ -184,9 +236,9 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         await _client.GetStream().WriteAsync(bytes, cancellationToken);
     }
 
-    private async Task<uint> ReadLength(CancellationToken cancellationToken = default)
+    private uint ReadLength()
     {
-        await _client.GetStream().ReadExactlyAsync(_readLenBuffer, 0, 1, cancellationToken);
+        _bufferStream.ReadExactly(_readLenBuffer, 0, 1);
         
         uint c = _readLenBuffer[0];
         
@@ -197,7 +249,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
 
         if ((c & 0xC0) == 0x80)
         {
-            await _client.GetStream().ReadExactlyAsync(_readLenBuffer, 0, 1, cancellationToken);
+            _bufferStream.ReadExactly(_readLenBuffer, 0, 1);
             
             const uint x = 0xC0;
             c &= ~x;
@@ -206,7 +258,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         }
         else if ((c & 0xE0) == 0xC0)
         {
-            await _client.GetStream().ReadExactlyAsync(_readLenBuffer, 0, 2, cancellationToken);
+            _bufferStream.ReadExactly(_readLenBuffer, 0, 2);
             
             const uint x = 0xE0;
             c &= ~x;
@@ -217,7 +269,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         }
         else if ((c & 0xF0) == 0xE0)
         {
-            await _client.GetStream().ReadExactlyAsync(_readLenBuffer, 0, 3, cancellationToken);
+            _bufferStream.ReadExactly(_readLenBuffer, 0, 3);
             
             const uint x = 0xF0;
             c &= ~x;
@@ -230,7 +282,7 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
         }
         else if ((c & 0xF8) == 0xF0)
         {
-            await _client.GetStream().ReadExactlyAsync(_readLenBuffer, 0, 4, cancellationToken);
+            _bufferStream.ReadExactly(_readLenBuffer, 0, 4);
             c = _readLenBuffer[0];
             c <<= 8;
             c += _readLenBuffer[1];
@@ -327,5 +379,6 @@ internal sealed class MikrotikTcpApiConnection : IDisposable
     public void Dispose()
     {
         _client.Dispose();
+        _bufferStream.Dispose();
     }
 }

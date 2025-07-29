@@ -41,7 +41,7 @@ RUN dotnet publish "MikrotikExporter/MikrotikExporter.csproj" \
 RUN file /app/build/MikrotikExporter
 
 FROM debian:12-slim AS runtime
-RUN apt update && apt install -y libicu72 && rm -rf /var/lib/apt/lists/*
+#RUN apt update && apt install -y libicu72 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -52,7 +52,7 @@ LABEL org.opencontainers.image.licenses=AGPLv3
 ENV ASPNETCORE_URLS=http://0.0.0.0:5000
 EXPOSE 5000
 
-COPY --from=build /app/build ./
+COPY --from=build /app/build/MikrotikExporter ./MikrotikExporter
 
 
 ENTRYPOINT ["./MikrotikExporter"] 

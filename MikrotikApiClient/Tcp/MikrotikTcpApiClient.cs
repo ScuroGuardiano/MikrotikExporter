@@ -1,3 +1,4 @@
+using DotNext.Threading;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MikrotikApiClient.Dto;
@@ -14,12 +15,46 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public string Name => _options.Name ?? Host;
 
     private readonly ILogger<MikrotikTcpApiClient> _logger;
+    private readonly AsyncLazy<string?> _wirelessPackage;
 
     public MikrotikTcpApiClient(IOptions<MikrotikApiClientOptions> options, ILogger<MikrotikTcpApiClient> logger)
     {
         _logger = logger;
         _options = options.Value;
         _connection = new MikrotikTcpApiConnection(_options.Host, _options.Username, _options.Password, logger);
+        
+        _wirelessPackage = new AsyncLazy<string?>(async ct =>
+        {
+            var packages = (await GetPackages(ct))
+                .Where(p => !p.Disabled)
+                .Select(p => p.Name).ToArray();
+            
+            string? wirelessPackage = null;
+            
+            if (packages.Any(x => x.StartsWith("wireless", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                wirelessPackage = "wireless";
+            }
+            else if (packages.Any(x => x.StartsWith("wifi", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                wirelessPackage = "wifi";
+            }
+            else if (packages.Any(x => x.StartsWith("wifiwave2", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                wirelessPackage = "wifiwave2";
+            }
+
+            if (wirelessPackage is null)
+            {
+                _logger.LogInformation("Wireless package not found. Wireless metrics won't be generated");
+            }
+            else
+            {
+                _logger.LogInformation("Wireless package: '{WirelessPackage}' found.", wirelessPackage);
+            }
+            
+            return wirelessPackage;
+        });
     }
     
     public async Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default)
@@ -56,10 +91,16 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
     public async Task<WlanMonitor[]> GetWlanMonitor(IEnumerable<string> numbers,
         CancellationToken cancellationToken = default)
     {
+        var wirelessPackage = await _wirelessPackage.WithCancellation(cancellationToken);
+        if (wirelessPackage == null)
+        {
+            return [];
+        }
+        
         await _connection.EnsureRunning(cancellationToken);
         
         var res = await _connection.Request([
-            "/interface/wireless/monitor",
+            $"/interface/{wirelessPackage}/monitor",
             "=once=",
             $"=numbers={string.Join(',', numbers)}"
         ]);
@@ -227,14 +268,33 @@ internal sealed class MikrotikTcpApiClient : IMikrotikApiClient
 
     public async Task<WlanRegistration[]> GetWlanRegistrations(CancellationToken cancellationToken = default)
     {
+        var wirelessPackage = await _wirelessPackage.WithCancellation(cancellationToken);
+        if (wirelessPackage == null)
+        {
+            return [];
+        }
+        
         await _connection.EnsureRunning(cancellationToken);
-        var res = await _connection.Request(["/interface/wireless/registration-table/print"]);
+        var res = await _connection.Request([$"/interface/{wirelessPackage}/registration-table/print"]);
         
         res.EnsureSuccess(_logger);
         
         return res.Sentences
             .Where(s => s.Reply == "!re")
             .Select(s => s.ToWlanRegistration())
+            .ToArray();
+    }
+
+    public async Task<Package[]> GetPackages(CancellationToken cancellationToken = default)
+    {
+        await _connection.EnsureRunning(cancellationToken);
+        var res = await _connection.Request(["/system/package/print"]);
+        
+        res.EnsureSuccess(_logger);
+        
+        return res.Sentences
+            .Where(s => s.Reply == "!re")
+            .Select(s => s.ToPackage())
             .ToArray();
     }
 

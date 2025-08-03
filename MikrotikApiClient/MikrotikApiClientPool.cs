@@ -108,6 +108,12 @@ internal sealed class MikrotikApiClientPool : IMikrotikConcurrentApiClient
         using var loan = await _clients.BorrowClient(_semaphoreSlim, cancellationToken);
         return await loan.Execute(c => c.GetWlanRegistrations(cancellationToken));
     }
+    
+    public async Task<Package[]> GetPackages(CancellationToken cancellationToken = default)
+    {
+        using var loan = await _clients.BorrowClient(_semaphoreSlim, cancellationToken);
+        return await loan.Execute(c => c.GetPackages(cancellationToken));
+    }
 
     private static int GetReasonableConnectionPoolValue(int connectionPoolFromOptions)
     {

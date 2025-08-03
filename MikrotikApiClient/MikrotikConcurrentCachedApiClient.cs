@@ -22,6 +22,7 @@ public class MikrotikConcurrentCachedApiClient : IMikrotikConcurrentApiClient
         _identity = new AsyncLazy<string>(ct => _client.GetIdentity(ct));
         _dnsCacheRecords = new AsyncLazy<DnsCacheRecord[]>(ct => _client.GetDnsCacheRecords(ct));
         _wlanRegistrations = new AsyncLazy<WlanRegistration[]>(ct => _client.GetWlanRegistrations(ct));
+        _packages = new AsyncLazy<Package[]>(ct => _client.GetPackages(ct));
     }
 
     public string Name => _client.Name;
@@ -37,6 +38,7 @@ public class MikrotikConcurrentCachedApiClient : IMikrotikConcurrentApiClient
     private readonly AsyncLazy<string> _identity;
     private readonly AsyncLazy<DnsCacheRecord[]> _dnsCacheRecords;
     private readonly AsyncLazy<WlanRegistration[]> _wlanRegistrations;
+    private readonly AsyncLazy<Package[]> _packages;
 
     public Task<InterfaceSummary[]> GetInterfaces(CancellationToken cancellationToken = default)
         => _interfaceSummaries.WithCancellation(cancellationToken);
@@ -77,6 +79,9 @@ public class MikrotikConcurrentCachedApiClient : IMikrotikConcurrentApiClient
 
     public Task<PppoeClientMonitor[]> GetPppoeClientMonitor(IEnumerable<string> numbers, CancellationToken cancellationToken = default)
         => _client.GetPppoeClientMonitor(numbers, cancellationToken); // not cached due to argument dependence.
+
+    public Task<Package[]> GetPackages(CancellationToken cancellationToken = default)
+        => _packages.WithCancellation(cancellationToken);
 
     public void Dispose()
     {
